@@ -1,39 +1,51 @@
 body {
   margin: 0;
   padding: 0;
-  background: #111;
-  font-family: sans-serif;
+  background: #0a0a0a;
+  font-family: 'Segoe UI', sans-serif;
   color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
 }
 
 .game {
   text-align: center;
-  max-width: 320px;
   width: 100%;
+  max-width: 360px;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+h1 {
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+}
+
+#status {
+  margin-bottom: 1rem;
+  font-weight: bold;
 }
 
 .board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  margin-top: 20px;
 }
 
 .cell {
-  width: 100px;
-  height: 100px;
-  background: #222;
+  width: 100%;
+  aspect-ratio: 1;
+  background: #1e1e1e;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 3rem;
-  border-radius: 10px;
+  font-size: 2.5rem;
+  border-radius: 15px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.1s;
 }
 
 .cell.player1 {
@@ -45,8 +57,14 @@ body {
 }
 
 .cell.winner {
-  background: #4caf50;
+  background: #4caf50 !important;
   color: #fff;
+  animation: pulse 0.5s infinite alternate;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
 }
 
 .controls {
@@ -54,11 +72,38 @@ body {
 }
 
 button {
-  padding: 10px 20px;
+  padding: 12px 20px;
   font-size: 1rem;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   background: #00b894;
-  color: #fff;
+  color: white;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #01947a;
+}
+
+/* Modal for winner */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: #111;
+  padding: 2rem;
+  border-radius: 15px;
+  text-align: center;
+  color: white;
+}
+
+.hidden {
+  display: none;
 }
