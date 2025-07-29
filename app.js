@@ -33,8 +33,9 @@ function renderBoard() {
 function handleClick(index) {
   if (!gameActive || gameState[index]) return;
 
+  clickSound.currentTime = 0;
   clickSound.play();
-  navigator.vibrate(30);
+  navigator.vibrate?.(30); // Safe optional chaining
 
   gameState[index] = currentPlayer;
   renderBoard();
@@ -61,9 +62,10 @@ function handleClick(index) {
 function checkWinner() {
   for (const [a, b, c] of winPatterns) {
     if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
-      document.querySelectorAll(".cell")[a].classList.add("winner");
-      document.querySelectorAll(".cell")[b].classList.add("winner");
-      document.querySelectorAll(".cell")[c].classList.add("winner");
+      const cells = document.querySelectorAll(".cell");
+      cells[a].classList.add("winner");
+      cells[b].classList.add("winner");
+      cells[c].classList.add("winner");
       return true;
     }
   }
