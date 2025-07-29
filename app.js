@@ -1,15 +1,20 @@
 const board = document.getElementById("board");
 const statusText = document.getElementById("status");
+const winnerModal = document.getElementById("winnerModal");
+const winnerText = document.getElementById("winnerText");
 
 let currentPlayer = "player1";
 let gameState = Array(9).fill(null);
 let gameActive = true;
 
 const winSound = new Audio("win.mp3");
+const drawSound = new Audio("draw.mp3");
+const clickSound = new Audio("click.mp3");
+
 const winPatterns = [
-  [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-  [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-  [0, 4, 8], [2, 4, 6]             // Diagonals
+  [0, 1, 2], [3, 4, 5], [6, 7, 8],
+  [0, 3, 6], [1, 4, 7], [2, 5, 8],
+  [0, 4, 8], [2, 4, 6]
 ];
 
 function renderBoard() {
@@ -28,16 +33,24 @@ function renderBoard() {
 function handleClick(index) {
   if (!gameActive || gameState[index]) return;
 
-  navigator.vibrate(50);
+  clickSound.play();
+  navigator.vibrate(30);
+
   gameState[index] = currentPlayer;
   renderBoard();
 
   if (checkWinner()) {
-    statusText.textContent = `${currentPlayer === "player1" ? "Player 1" : "Player 2"} Wins!`;
+    const winnerName = currentPlayer === "player1" ? "Player 1" : "Player 2";
+    statusText.textContent = `${winnerName} Wins!`;
+    winnerText.textContent = `${winnerName} Wins 🎉`;
+    winnerModal.classList.remove("hidden");
     winSound.play();
     gameActive = false;
   } else if (gameState.every(Boolean)) {
     statusText.textContent = "Draw!";
+    winnerText.textContent = "Draw!";
+    winnerModal.classList.remove("hidden");
+    drawSound.play();
     gameActive = false;
   } else {
     currentPlayer = currentPlayer === "player1" ? "player2" : "player1";
@@ -62,6 +75,7 @@ function resetGame() {
   gameActive = true;
   currentPlayer = "player1";
   statusText.textContent = "Player 1's Turn";
+  winnerModal.classList.add("hidden");
   renderBoard();
 }
 
