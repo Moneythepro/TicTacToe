@@ -1,4 +1,4 @@
-const CACHE_NAME = "tic-tac-toe-cache-v1";
+const CACHE_NAME = "tic-tac-toe-cache-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -6,6 +6,8 @@ const ASSETS = [
   "./app.js",
   "./manifest.json",
   "./win.mp3",
+  "./draw.mp3",
+  "./click.mp3",
   "./icon-192.png",
   "./icon-512.png"
 ];
