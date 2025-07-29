@@ -28,8 +28,7 @@ A fully responsive, installable Tic Tac Toe web app built for 1v1 local play. Op
 
 ## 🚀 Live Demo
 
-[🔗 Play Now](https://moneythepro.github.io/Tic-Tac-Toe-PWA)  
-*(Update with your actual repo name)*
+[🔗 Play Now](https://moneythepro.github.io/TicTacToe/)  
 
 ---
 
