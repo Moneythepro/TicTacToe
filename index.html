@@ -4,9 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Tic Tac Toe</title>
+
+  <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
+
+  <!-- PWA Meta -->
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#000" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 </head>
 <body>
   <div class="game">
@@ -26,13 +34,40 @@
     </div>
   </div>
 
+  <!-- App JS -->
   <script src="app.js"></script>
+
+  <!-- Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js')
-        .then(() => console.log('✅ PWA Ready'))
-        .catch(err => console.error('❌ SW failed', err));
+        .then(() => console.log('✅ Service Worker registered'))
+        .catch(err => console.error('❌ Service Worker registration failed', err));
     }
+
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      console.log('🛠️ App install prompt is ready');
+
+      // Optional install button (uncomment to use it)
+      // const installBtn = document.createElement('button');
+      // installBtn.textContent = 'Install App';
+      // installBtn.className = 'install-button';
+      // installBtn.onclick = () => {
+      //   deferredPrompt.prompt();
+      //   deferredPrompt.userChoice.then(choice => {
+      //     if (choice.outcome === 'accepted') {
+      //       console.log('🎉 App installed');
+      //     } else {
+      //       console.log('❌ Install dismissed');
+      //     }
+      //     deferredPrompt = null;
+      //   });
+      // };
+      // document.body.appendChild(installBtn);
+    });
   </script>
 </body>
 </html>
