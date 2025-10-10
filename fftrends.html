@@ -3,24 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Free Fire Shorts Finder — Simple & Light</title>
-  <meta name="description" content="Simple tool to fetch trending Free Fire YouTube Shorts (last N days) without needing your own API key. Mobile & desktop friendly." />
-  <meta name="robots" content="index,follow" />
-  <meta property="og:title" content="Free Fire Shorts Finder — Simple & Light" />
-  <meta property="og:description" content="Fetch trending Free Fire YouTube Shorts titles, descriptions and hashtags easily (no API key)." />
+  <title>Free Fire Shorts Finder — no API key</title>
+  <meta name="description" content="Find trending Free Fire YouTube Shorts (last N days) without an API key. Tries public Invidious instances automatically." />
   <style>
-    :root{--bg:#fff;--text:#111;--muted:#555;--accent:#ff7a00;--card:#f8f8f8;--radius:12px}
+    /* Lightweight responsive styling (mobile-first) */
+    :root{
+      --bg:#fff; --fg:#111; --muted:#666; --accent:#ff6a00; --card:#f6f6f6; --radius:12px;
+    }
+    *{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial; background:var(--bg); color:var(--text); display:flex;flex-direction:column;align-items:center;padding:18px;}
-    .container{max-width:1100px;width:100%}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--fg);display:flex;align-items:flex-start;justify-content:center;padding:18px;}
+    .wrap{max-width:980px;width:100%}
     header{display:flex;flex-direction:column;align-items:center;gap:6px}
-    h1{margin:6px 0;font-size:1.2rem}
-    p.lead{margin:0;color:var(--muted);text-align:center;max-width:760px;font-size:0.95rem}
-    .controls{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
-    .field{display:flex;gap:8px;align-items:center}
-    input[type="text"], select, input[type="number"]{padding:8px 10px;border-radius:10px;border:1px solid #e6e6e6;background:#fff;color:var(--text);min-width:160px}
-    button.primary{background:linear-gradient(90deg,var(--accent),#ff9b4d);border:none;color:#fff;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer}
-    button.ghost{background:transparent;border:1px solid #eee;padding:8px 10px;border-radius:10px;color:var(--muted);cursor:pointer}
+    h1{margin:4px 0;font-size:1.15rem}
+    p.lead{margin:0;color:var(--muted);text-align:center;font-size:0.95rem}
+    .controls{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}
+    label.small{font-size:0.82rem;color:var(--muted);display:block;margin-bottom:6px;text-align:left}
+    .field{display:flex;flex-direction:column;gap:6px;min-width:120px}
+    input[type="text"], input[type="number"], select{padding:8px 10px;border-radius:10px;border:1px solid #e9e9e9;min-width:160px}
+    button{border:0;padding:9px 12px;border-radius:10px;cursor:pointer}
+    .primary{background:linear-gradient(90deg,var(--accent),#ff9a4d);color:white;font-weight:600}
+    .ghost{background:transparent;border:1px solid #eee;color:var(--muted)}
     .results{margin-top:18px;display:grid;gap:12px}
     .card{background:var(--card);border-radius:var(--radius);padding:12px;border:1px solid #eee;display:flex;gap:12px;align-items:flex-start}
     .thumb{width:140px;height:80px;border-radius:8px;overflow:hidden;background:#ddd;flex-shrink:0}
@@ -30,67 +33,174 @@
     .meta p{margin:0;color:var(--muted);font-size:0.92rem}
     .tags{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
     .tag{background:#fff;padding:6px 8px;border-radius:999px;border:1px solid #eee;font-size:0.82rem;color:var(--muted)}
-    pre.code{background:#fff;padding:12px;border-radius:8px;border:1px dashed #eee;color:var(--text);white-space:pre-wrap}
+    pre.code{background:#fff;padding:12px;border-radius:8px;border:1px dashed #eee;color:var(--fg);white-space:pre-wrap;font-size:0.92rem}
     .small{font-size:0.86rem;color:var(--muted)}
     .actions{display:flex;gap:8px;align-items:center;margin-top:8px}
-    @media (min-width:880px){ .results{grid-template-columns:1fr 1fr} .container{padding:6px 20px} }
-    @media (orientation:landscape) and (max-width:880px){ body{padding:12px} .results{grid-template-columns:1fr 1fr} }
-    /* accessibility focus */
-    :focus{outline:3px solid rgba(255,122,0,0.16);outline-offset:2px}
+    @media (min-width:880px){ .results{grid-template-columns:1fr 1fr} }
+    @media (max-width:560px){ .thumb{display:none} .meta h3{font-size:0.98rem} }
+    :focus{outline:3px solid rgba(255,106,0,0.12);outline-offset:3px}
   </style>
 </head>
 <body>
-  <div class="container" role="main">
+  <main class="wrap" role="main">
     <header>
-      <h1>🔥 Free Fire Shorts Finder</h1>
-      <p class="lead">No API key needed. Uses a public proxy. Fetch trending Free Fire YouTube Shorts from the last N days and get ready-made title, description and keywords you can copy.</p>
+      <h1>🔥 Free Fire Shorts Finder (no API key)</h1>
+      <p class="lead">Tries public Invidious instances automatically, filters to the last N days, and gives ready-to-copy Title / Description / Keywords blocks.</p>
     </header>
 
-    <div class="controls" aria-hidden="false">
+    <div class="controls" aria-hidden="false" style="margin-top:14px;">
       <div class="field">
         <label class="small" for="query">Query</label>
         <input id="query" type="text" value="Free Fire" aria-label="search query" />
       </div>
 
       <div class="field">
-        <label class="small" for="days">Days</label>
-        <input id="days" type="number" min="1" max="7" value="3" aria-label="days range" />
+        <label class="small" for="days">Days (1–7)</label>
+        <input id="days" type="number" min="1" max="7" value="3" aria-label="days" />
       </div>
 
       <div class="field">
-        <label class="small" for="max">Max</label>
-        <input id="max" type="number" min="1" max="30" value="10" aria-label="max results" />
+        <label class="small" for="max">Max results</label>
+        <input id="max" type="number" min="1" max="25" value="10" aria-label="max results" />
       </div>
 
-      <div>
-        <button id="findBtn" class="primary" aria-label="find trending shorts">Find</button>
+      <div style="display:flex;flex-direction:column;gap:8px;justify-content:center;">
+        <button id="findBtn" class="primary" aria-label="Find trending shorts">Find</button>
+        <button id="checkBtn" class="ghost" aria-label="Check instances">Check instances</button>
+      </div>
+    </div>
+
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <div class="small">Active instance:</div>
+      <div id="activeInstance" class="small" style="font-weight:600">—</div>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+        <input id="manualInstance" type="text" placeholder="Manual Invidious base (e.g. https://yewtu.be)" style="padding:8px;border-radius:10px;border:1px solid #eee" />
+        <button id="useManual" class="ghost">Use</button>
       </div>
     </div>
 
     <div id="results" class="results" aria-live="polite"></div>
 
     <footer style="margin-top:18px;text-align:center;color:var(--muted);font-size:0.9rem">
-      Simple · Light · Mobile & Desktop friendly · Public proxy (limited)
+      Uses public Invidious instances (no API key). Public instances can be unreliable — the app will try several automatically. If nothing works, I can give a tiny serverless proxy next. 
     </footer>
-  </div>
+  </main>
 
   <script>
-    // Simple, lightweight script (no libs). Public proxy used: yt.lemnoslife.com
-    const SEARCH_PROXY_BASE = 'https://yt.lemnoslife.com/search';
-    const VIDEOS_PROXY_BASE = 'https://yt.lemnoslife.com/videos?part=snippet';
+    /* === Candidate instances (Invidious-style) ===
+       The app will test these in order for CORS/API availability.
+       If you know a working instance, paste it in the manual field and click Use.
+    */
+    const CANDIDATES = [
+      { name: 'yewtu.be (invidious)', base: 'https://yewtu.be', type:'invidious' },
+      { name: 'invidious.f5.si', base: 'https://invidious.f5.si', type:'invidious' },
+      { name: 'invidious.nerdvpn.de', base: 'https://invidious.nerdvpn.de', type:'invidious' },
+      { name: 'inv.nadeko.net', base: 'https://inv.nadeko.net', type:'invidious' }, // may have API disabled on some instances
+      { name: 'lemnoslife (legacy)', base: 'https://yt.lemnoslife.com', type:'lemnos' } // fallback (different paths)
+    ];
 
-    const el = {
-      query: document.getElementById('query'),
+    const els = {
+      q: document.getElementById('query'),
       days: document.getElementById('days'),
       max: document.getElementById('max'),
       findBtn: document.getElementById('findBtn'),
-      results: document.getElementById('results')
+      checkBtn: document.getElementById('checkBtn'),
+      results: document.getElementById('results'),
+      activeInstance: document.getElementById('activeInstance'),
+      manualInput: document.getElementById('manualInstance'),
+      useManual: document.getElementById('useManual')
     };
 
+    let activeInstance = null; // {name, base, type}
+
+    // small utility: abortable fetch with timeout
+    async function fetchWithTimeout(url, opts={}, timeout=7000){
+      const controller = new AbortController();
+      const id = setTimeout(()=>controller.abort(), timeout);
+      try{
+        const res = await fetch(url, {...opts, signal: controller.signal});
+        clearTimeout(id);
+        return res;
+      }catch(e){
+        clearTimeout(id);
+        throw e;
+      }
+    }
+
+    // test a single candidate for CORS/API
+    async function testInstanceCandidate(candidate){
+      try{
+        let testUrl;
+        if(candidate.type === 'invidious'){
+          testUrl = `${candidate.base.replace(/\/$/,'')}/api/v1/search?q=test&page=1&sort=views&duration=short`;
+        }else if(candidate.type === 'lemnos'){
+          // lemnoslife has slightly different paths
+          testUrl = `${candidate.base.replace(/\/$/,'')}/search?type=video&videoDuration=short&maxResults=1&q=test`;
+        }else{
+          testUrl = `${candidate.base.replace(/\/$/,'')}/api/v1/search?q=test`;
+        }
+        const r = await fetchWithTimeout(testUrl, {method:'GET'}, 7000);
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        // quick body check
+        const txt = await r.text().catch(()=>null);
+        if(!txt) throw new Error('empty response');
+        try{ JSON.parse(txt); }catch(e){ /* not json */ throw new Error('not-json'); }
+        return true;
+      }catch(e){
+        return false;
+      }
+    }
+
+    async function autoDetectInstance(){
+      els.activeInstance.textContent = 'Checking…';
+      for(const c of CANDIDATES){
+        els.activeInstance.textContent = 'Testing ' + c.name;
+        try{
+          const ok = await testInstanceCandidate(c);
+          if(ok){
+            activeInstance = c;
+            els.activeInstance.textContent = `${c.name}`;
+            return c;
+          }
+        }catch(e){
+          // ignore
+        }
+      }
+      els.activeInstance.textContent = 'No working instance found (try manual or try again)';
+      activeInstance = null;
+      return null;
+    }
+
+    // Build search URL according to instance type
+    function buildSearchUrl(inst, q, max, publishedAfterIso){
+      const base = inst.base.replace(/\/$/,'');
+      if(inst.type === 'invidious'){
+        // use Invidious search with duration filter, sort by views
+        // we'll still filter by publishedAfterIso client-side
+        // params: q, type=video, duration=short, sort=views, page=1
+        return `${base}/api/v1/search?q=${encodeURIComponent(q)}&type=video&duration=short&sort=views&page=1`;
+      }else if(inst.type === 'lemnos'){
+        // lemnoslife path (legacy)
+        return `${base}/search?type=video&videoDuration=short&order=viewCount&maxResults=${max}&q=${encodeURIComponent(q)}`;
+      }else{
+        return `${base}/api/v1/search?q=${encodeURIComponent(q)}&type=video&duration=short&sort=views&page=1`;
+      }
+    }
+    function buildVideoUrl(inst, videoId){
+      const base = inst.base.replace(/\/$/,'');
+      if(inst.type === 'invidious'){
+        return `${base}/api/v1/videos/${encodeURIComponent(videoId)}`;
+      }else if(inst.type === 'lemnos'){
+        return `${base}/videos?part=snippet&id=${encodeURIComponent(videoId)}`;
+      }else{
+        return `${base}/api/v1/videos/${encodeURIComponent(videoId)}`;
+      }
+    }
+
+    // helpers for tokenizing & hashtags
     function isoDaysAgo(days){
       const d = new Date(); d.setDate(d.getDate() - Number(days)); return d.toISOString();
     }
-
     function extractHashtags(text){
       if(!text) return [];
       try{
@@ -99,23 +209,20 @@
         for(const m of text.matchAll(re)) out.push('#'+m[1]);
         return out;
       }catch(e){
-        const m = text.match(/#(\w+)/g) || []; return m;
+        return (text.match(/#(\w+)/g) || []);
       }
     }
-
     function tokenize(s){
       if(!s) return [];
       return s.toLowerCase().replace(/[‘’“”]/g,'').split(/[^a-z0-9]+/i).filter(Boolean).filter(w=>w.length>1);
     }
-
-    function topNFromMap(map, n=10){
-      return Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,n).map(x=>x[0]);
-    }
+    function topNFromMap(map, n=10){ return Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,n).map(x=>x[0]); }
+    function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1) }
 
     function generateTitle(keywords){
       if(!keywords || keywords.length===0) return 'Free Fire Short — Trending #shorts';
-      const primary = keywords[0];
-      const secon = keywords.slice(1,3).join(' | ');
+      const primary = keywords[0].replace(/^#+/,'');
+      const secon = keywords.slice(1,3).map(s=>s.replace(/^#+/,'')).join(' | ');
       return `${capitalize(primary)}${secon ? ' — '+secon : ''} | Free Fire #shorts`.slice(0,100);
     }
     function generateDescription(keywords, days){
@@ -126,124 +233,186 @@
       const top = topNFromMap(freqMap, limit).map(s => s.replace(/^#+/,''));
       return '"' + top.join(', ') + '"';
     }
-    function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1) }
 
-    async function fetchJson(url){
-      const r = await fetch(url);
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      return r.json();
-    }
-
+    // core: find shorts using the active instance (auto-detected if needed)
     async function findShorts(){
-      el.results.innerHTML = '<div class="small">Fetching trending shorts — please wait…</div>';
-      const q = encodeURIComponent(el.query.value.trim() || 'Free Fire');
-      const days = Number(el.days.value) || 3;
-      const max = Math.max(1, Math.min(30, Number(el.max.value) || 10));
+      els.results.innerHTML = '<div class="small">Preparing…</div>';
+      // ensure active instance
+      if(!activeInstance){
+        await autoDetectInstance();
+        if(!activeInstance){
+          els.results.innerHTML = `<div class="small">No working public instance detected. Click "Check instances" to try again, paste a manual instance, or ask me for a small serverless proxy (I can provide code).</div>`;
+          return;
+        }
+      }
+      const q = (els.q.value || 'Free Fire').trim();
+      const days = Number(els.days.value) || 3;
+      const max = Math.max(1, Math.min(25, Number(els.max.value) || 10));
       const publishedAfter = isoDaysAgo(days);
-
-      // Build search URL for proxy. The proxy expects query params similar to YouTube API.
-      const searchUrl = `${SEARCH_PROXY_BASE}?type=video&videoDuration=short&order=viewCount&maxResults=${max}&q=${q}&publishedAfter=${encodeURIComponent(publishedAfter)}`;
+      els.results.innerHTML = `<div class="small">Searching ${q} on ${activeInstance.name} — please wait…</div>`;
 
       try{
-        const searchData = await fetchJson(searchUrl);
-        const items = (searchData.items || []).filter(it => it && (it.id?.videoId || it.id));
-        if(items.length === 0){ el.results.innerHTML = '<div class="small">No shorts found for that query/time range.</div>'; return; }
+        const searchUrl = buildSearchUrl(activeInstance, q, max, publishedAfter);
+        const resp = await fetchWithTimeout(searchUrl, {}, 10000);
+        if(!resp.ok) throw new Error('Search returned '+resp.status);
+        const data = await resp.json();
+        // Invidious returns an array; lemnos returns a different shape (legacy) — normalize:
+        const items = Array.isArray(data) ? data : (data.items || []);
+        if(items.length === 0){ els.results.innerHTML = '<div class="small">No results found.</div>'; return; }
 
-        // Collect ids
-        const ids = items.map(it => it.id?.videoId || it.id).slice(0,50);
-        const idsParam = ids.join(',');
-        const videosUrl = `${VIDEOS_PROXY_BASE}&id=${encodeURIComponent(idsParam)}`;
-        const videosData = await fetchJson(videosUrl);
-        const videos = videosData.items || [];
+        // collect video IDs and then fetch each video's details
+        const vids = [];
+        for(const it of items){
+          // Invidious search item has type:'video' and videoId
+          if(it.type === 'video' && (it.videoId || it.videoId === 0)){
+            vids.push({ id: it.videoId, published: it.published || it.publishedText || null, thumb: (it.videoThumbnails && it.videoThumbnails[0] && it.videoThumbnails[0].url) || (it.videoThumbnails && it.videoThumbnails.medium && it.videoThumbnails.medium.url) || null, snippetDesc: it.description || it.descriptionHtml || '' });
+          } else if(it.id || it.videoId){
+            vids.push({ id: it.id || it.videoId, published: it.published || null, thumb: (it.videoThumbnails && it.videoThumbnails[0] && it.videoThumbnails[0].url) || null, snippetDesc: it.description || '' });
+          }
+          if(vids.length >= max) break;
+        }
+        if(vids.length === 0){ els.results.innerHTML = '<div class="small">No videos found in search results.</div>'; return; }
 
-        // Aggregate tokens & build UI
-        const freq = {};
-        const nodes = document.createDocumentFragment();
+        // For each video, fetch detailed info (keeps rate gentle)
+        const freq = {}; // aggregated frequency map
+        const fragment = document.createDocumentFragment();
+        for(const v of vids.slice(0,max)){
+          try{
+            const videoUrl = buildVideoUrl(activeInstance, v.id);
+            const vr = await fetchWithTimeout(videoUrl, {}, 10000);
+            if(!vr.ok) throw new Error('Video fetch '+vr.status);
+            const vdata = await vr.json();
+            // normalize: Invidious /api/v1/videos/:id returns fields like title, description, keywords (array), published
+            const title = vdata.title || vdata.snippet?.title || 'Untitled';
+            const description = vdata.description || vdata.snippet?.description || vdata.snippet?.description || '';
+            const tags = vdata.keywords || vdata.keywords || vdata.snippet?.tags || vdata.snippet?.keywords || [];
+            const thumb = (vdata.videoThumbnails && vdata.videoThumbnails[0] && vdata.videoThumbnails[0].url) || v.snippetThumb || v.thumb || '';
 
-        for(const v of videos){
-          const snip = v.snippet || {};
-          const title = snip.title || '';
-          const desc = snip.description || '';
-          const tags = snip.tags || [];
-          // aggregate
-          tokenize(title).forEach(t=> freq[t] = (freq[t]||0)+3);
-          tokenize(desc).forEach(t=> freq[t] = (freq[t]||0)+1);
-          tags.forEach(t=> { if(t) freq[t.toLowerCase()] = (freq[t.toLowerCase()]||0)+4 });
-          extractHashtags(desc).forEach(h=> { const k = h.replace('#','').toLowerCase(); if(k) freq[k] = (freq[k]||0)+5 });
+            // published filtering: many endpoints give "published" as UNIX ms or seconds
+            let publishedIso = null;
+            if(vdata.published) {
+              // Invidious 'published' is epoch seconds or ms? docs: Int64. If > 1e12 treat as ms
+              const p = Number(vdata.published);
+              publishedIso = (p > 1e12) ? new Date(p).toISOString() : new Date(p*1000).toISOString();
+            } else if(vdata.publishedText && vdata.publishedText) { publishedIso = null; }
 
-          // Render card per video
-          const card = document.createElement('article'); card.className = 'card';
-          const thumbUrl = snip.thumbnails?.medium?.url || snip.thumbnails?.default?.url || '';
-          const thumb = document.createElement('div'); thumb.className = 'thumb';
-          thumb.innerHTML = thumbUrl ? `<img src="${thumbUrl}" alt="thumbnail">` : '';
-          const meta = document.createElement('div'); meta.className = 'meta';
-          const h3 = document.createElement('h3'); h3.textContent = title;
-          const ch = document.createElement('p'); ch.className='small'; ch.textContent = `${snip.channelTitle || ''} • ${timeAgo(snip.publishedAt)}`;
-          const pdesc = document.createElement('p'); pdesc.textContent = (desc || '').slice(0,220) + ((desc||'').length>220 ? '…' : '');
-          const tagwrap = document.createElement('div'); tagwrap.className='tags';
-          (tags || []).slice(0,6).forEach(t=> { const sp = document.createElement('span'); sp.className='tag'; sp.textContent = t; tagwrap.appendChild(sp); });
-          extractHashtags(desc).slice(0,6).forEach(h=> { const sp = document.createElement('span'); sp.className='tag'; sp.textContent = h; tagwrap.appendChild(sp); });
+            if(publishedIso && publishedIso < publishedAfter) {
+              // skip older than requested days
+              continue;
+            }
 
-          // generate SEO snippet for this video
-          const perFreq = {};
-          tokenize(title).forEach(t=> perFreq[t] = (perFreq[t]||0)+3);
-          tokenize(desc).forEach(t=> perFreq[t] = (perFreq[t]||0)+1);
-          (tags||[]).forEach(t=> { if(t) perFreq[t.toLowerCase()] = (perFreq[t.toLowerCase()]||0)+4 });
-          extractHashtags(desc).forEach(h=> { const k = h.replace('#','').toLowerCase(); if(k) perFreq[k] = (perFreq[k]||0)+5 });
-          const perTop = topNFromMap(perFreq, 8);
-          const seoTitle = generateTitle(perTop);
-          const seoDesc = generateDescription(perTop, days);
-          const seoKeys = generateKeywords(perFreq, 12);
-          const pre = document.createElement('pre'); pre.className='code'; pre.textContent = `Title: ${seoTitle}\n\nDescription:\n${seoDesc}\n\nKeywords: ${seoKeys}`;
+            // aggregate tokens
+            tokenize(title).forEach(t=> freq[t] = (freq[t]||0)+3);
+            tokenize(description).forEach(t=> freq[t] = (freq[t]||0)+1);
+            (tags||[]).forEach(t=> { if(t) freq[t.toLowerCase()] = (freq[t.toLowerCase()]||0)+4 });
+            extractHashtags(description).forEach(h=> { const k = h.replace('#','').toLowerCase(); if(k) freq[k] = (freq[k]||0)+5 });
 
-          const actions = document.createElement('div'); actions.className='actions';
-          const copyBtn = document.createElement('button'); copyBtn.className='ghost'; copyBtn.textContent='Copy'; copyBtn.onclick = async () => {
-            try{ await navigator.clipboard.writeText(pre.textContent); copyBtn.textContent='Copied!'; setTimeout(()=>copyBtn.textContent='Copy',1200); }catch(e){ alert('Copy failed — select and copy manually'); }
-          };
-          actions.appendChild(copyBtn);
+            // per-video SEO snippet
+            const perFreq = {};
+            tokenize(title).forEach(t=> perFreq[t] = (perFreq[t]||0)+3);
+            tokenize(description).forEach(t=> perFreq[t] = (perFreq[t]||0)+1);
+            (tags||[]).forEach(t=> { if(t) perFreq[t.toLowerCase()] = (perFreq[t.toLowerCase()]||0)+4 });
+            extractHashtags(description).forEach(h=> { const k = h.replace('#','').toLowerCase(); if(k) perFreq[k] = (perFreq[k]||0)+5 });
 
-          meta.appendChild(h3); meta.appendChild(ch); meta.appendChild(pdesc); meta.appendChild(tagwrap); meta.appendChild(pre); meta.appendChild(actions);
-          card.appendChild(thumb); card.appendChild(meta);
-          nodes.appendChild(card);
+            const perTop = topNFromMap(perFreq, 8);
+            const seoTitle = generateTitle(perTop);
+            const seoDesc = generateDescription(perTop, els.days.value);
+            const seoKeys = generateKeywords(perFreq, 12);
+
+            // render UI card
+            const card = document.createElement('article'); card.className='card';
+            const thumbWrap = document.createElement('div'); thumbWrap.className='thumb';
+            thumbWrap.innerHTML = thumb ? `<img src="${thumb}" alt="thumb">` : '';
+            const meta = document.createElement('div'); meta.className='meta';
+            const h3 = document.createElement('h3'); h3.textContent = title;
+            const ch = document.createElement('p'); ch.className='small'; ch.textContent = `${vdata.author || vdata.author || ''} • ${vdata.publishedText || ''}`;
+            const pdesc = document.createElement('p'); pdesc.textContent = (description || '').slice(0,220) + ((description||'').length>220 ? '…' : '');
+            const tagwrap = document.createElement('div'); tagwrap.className='tags';
+            (tags || []).slice(0,6).forEach(t=> { const sp = document.createElement('span'); sp.className='tag'; sp.textContent = t; tagwrap.appendChild(sp); });
+            extractHashtags(description).slice(0,6).forEach(h=> { const sp = document.createElement('span'); sp.className='tag'; sp.textContent = h; tagwrap.appendChild(sp); });
+
+            const pre = document.createElement('pre'); pre.className='code';
+            pre.textContent = `Title: ${seoTitle}\n\nDescription:\n${seoDesc}\n\nKeywords: ${seoKeys}`;
+
+            const actions = document.createElement('div'); actions.className='actions';
+            const copyBtn = document.createElement('button'); copyBtn.className='ghost'; copyBtn.textContent='Copy';
+            copyBtn.onclick = async () => {
+              try{ await navigator.clipboard.writeText(pre.textContent); copyBtn.textContent='Copied!'; setTimeout(()=>copyBtn.textContent='Copy',1200); }catch(e){ alert('Copy failed — select and copy manually'); }
+            };
+            actions.appendChild(copyBtn);
+
+            meta.appendChild(h3); meta.appendChild(ch); meta.appendChild(pdesc); meta.appendChild(tagwrap); meta.appendChild(pre); meta.appendChild(actions);
+            card.appendChild(thumbWrap); card.appendChild(meta);
+            fragment.appendChild(card);
+
+            // gentle delay to reduce chance of rate limit
+            await new Promise(r=>setTimeout(r, 220));
+          }catch(errInner){
+            // ignore single-video errors, continue others
+            console.warn('video fetch error', v.id, errInner);
+          }
         }
 
-        // Finally, render aggregated SEO for all videos combined
+        // aggregated SEO
         const combinedTop = topNFromMap(freq, 20);
         const aggTitle = generateTitle(combinedTop);
-        const aggDesc = generateDescription(combinedTop, days);
+        const aggDesc = generateDescription(combinedTop, els.days.value);
         const aggKeys = generateKeywords(freq, 25);
         const aggCard = document.createElement('div'); aggCard.className='card';
         aggCard.style.gridColumn = '1/-1';
         const aggMeta = document.createElement('div'); aggMeta.className='meta';
         const aggH = document.createElement('h3'); aggH.textContent = 'Aggregated SEO (all results)';
-        const aggPre = document.createElement('pre'); aggPre.className='code'; aggPre.textContent = `Title: ${aggTitle}\n\nDescription:\n${aggDesc}\n\nKeywords: ${aggKeys}`;
+        const aggPre = document.createElement('pre'); aggPre.className='code';
+        aggPre.textContent = `Title: ${aggTitle}\n\nDescription:\n${aggDesc}\n\nKeywords: ${aggKeys}`;
         const aggActions = document.createElement('div'); aggActions.className='actions';
-        const aggCopy = document.createElement('button'); aggCopy.className='ghost'; aggCopy.textContent='Copy All'; aggCopy.onclick = async () => {
+        const aggCopy = document.createElement('button'); aggCopy.className='ghost'; aggCopy.textContent='Copy All';
+        aggCopy.onclick = async () => {
           try{ await navigator.clipboard.writeText(aggPre.textContent); aggCopy.textContent='Copied!'; setTimeout(()=>aggCopy.textContent='Copy All',1200); }catch(e){ alert('Copy failed — select and copy manually'); }
         };
         aggActions.appendChild(aggCopy);
         aggMeta.appendChild(aggH); aggMeta.appendChild(aggPre); aggMeta.appendChild(aggActions);
         aggCard.appendChild(aggMeta);
 
-        el.results.innerHTML = '';
-        el.results.appendChild(aggCard);
-        el.results.appendChild(nodes);
+        els.results.innerHTML = '';
+        els.results.appendChild(aggCard);
+        els.results.appendChild(fragment);
 
       }catch(err){
-        el.results.innerHTML = `<div class="small">Error: ${String(err.message || err)}</div>`;
+        console.error(err);
+        els.results.innerHTML = `<div class="small">Error: ${String(err.message || err)} — try "Check instances" and/or paste a manual Invidious instance (some public instances block CORS or have disabled the API).</div>`;
       }
     }
 
-    function timeAgo(iso){
-      if(!iso) return '';
-      const d = new Date(iso); const diff = Math.floor((Date.now()-d.getTime())/1000);
-      if(diff < 60) return diff+'s ago';
-      if(diff < 3600) return Math.floor(diff/60) + 'm ago';
-      if(diff < 86400) return Math.floor(diff/3600) + 'h ago';
-      return Math.floor(diff/86400) + 'd ago';
-    }
+    // UI events
+    els.checkBtn.addEventListener('click', async () => {
+      els.results.innerHTML = '<div class="small">Checking known public instances…</div>';
+      await autoDetectInstance();
+    });
 
-    el.findBtn.addEventListener('click', findShorts);
+    els.findBtn.addEventListener('click', async () => {
+      // if no active instance, auto-detect first
+      if(!activeInstance){
+        await autoDetectInstance();
+        if(!activeInstance){
+          els.results.innerHTML = `<div class="small">No working instance auto-detected. Paste a manual instance (e.g. https://yewtu.be) and click Use, or click Check instances.</div>`;
+          return;
+        }
+      }
+      findShorts();
+    });
+
+    els.useManual.addEventListener('click', ()=>{
+      const v = (els.manualInput.value || '').trim();
+      if(!v) return alert('Paste the full base URL of an Invidious instance (https://...)');
+      // simple validation:
+      if(!/^https?:\/\//.test(v)) return alert('Please paste a URL starting with https://');
+      activeInstance = { name: 'Manual', base: v.replace(/\/$/,'') , type: v.includes('lemnoslife') ? 'lemnos' : 'invidious' };
+      els.activeInstance.textContent = activeInstance.base;
+      els.results.innerHTML = `<div class="small">Set manual instance: ${activeInstance.base} — click Find.</div>`;
+    });
+
+    // Auto-detect on load but don't force user
+    (async ()=>{ /* attempt quietly */ try{ await autoDetectInstance(); }catch(e){} })();
   </script>
 </body>
 </html>
