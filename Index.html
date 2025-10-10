@@ -1,0 +1,472 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Free Fire Shorts Trend Finder — SEO Title & Tags Generator</title>
+  <meta name="description" content="Discover trending Free Fire YouTube Shorts (last 3 days). Auto-generate SEO-optimized title, description, and comma-separated keywords ready to copy and paste.">
+  <link rel="canonical" href="https://your-domain-or-github-pages-url/">
+  <meta name="robots" content="index, follow">  <!-- Open Graph -->  <meta property="og:title" content="Free Fire Shorts Trend Finder — SEO Title & Tags Generator">
+  <meta property="og:description" content="Discover trending Free Fire YouTube Shorts (last 3 days). Auto-generate SEO-optimized title, description, and comma-separated keywords ready to copy and paste.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://your-domain-or-github-pages-url/">  <!-- Twitter Card -->  <meta name="twitter:card" content="summary_large_image">  <!-- Structured Data (helpful for SEO) -->  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Free Fire Shorts Trend Finder",
+    "url": "https://your-domain-or-github-pages-url/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://your-domain-or-github-pages-url/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>  <!-- Minimal critical CSS to improve FCP, rest is small and inline for a single-file app -->  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#9aa6b2;--accent:#ff6b00;--glass:rgba(255,255,255,0.03);--radius:12px}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; background:linear-gradient(180deg,#071021 0%, #071827 100%);color:#e6eef6;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:1100px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;gap:16px}
+    .logo{display:flex;align-items:center;gap:12px}
+    .brand{font-weight:700;font-size:1.1rem}
+    .hero{margin-top:18px;background:var(--card);padding:18px;border-radius:16px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+
+    .controls{display:grid;grid-template-columns:1fr 260px;gap:12px}
+    @media (max-width:880px){.controls{grid-template-columns:1fr} }
+
+    input,select,button{font-size:0.95rem}
+    .field{display:flex;gap:8px;align-items:center}
+    .field input[type=text], .field input[type=number], .field select{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:inherit}
+    .small{font-size:0.84rem;color:var(--muted)}
+
+    button.primary{background:linear-gradient(90deg,var(--accent),#ff8e3c);border:0;padding:10px 14px;border-radius:10px;color:#071827;font-weight:700;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 10px;border-radius:10px;color:var(--muted);cursor:pointer}
+
+    .results{margin-top:18px;display:grid;grid-template-columns:1fr;gap:12px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);display:flex;gap:12px;align-items:flex-start}
+    .thumb{width:140px;height:80px;border-radius:8px;background:#06202f;flex-shrink:0;overflow:hidden}
+    .meta{flex:1}
+    .meta h4{margin:0 0 6px 0;font-size:0.98rem}
+    .meta p{margin:0;font-size:0.88rem;color:var(--muted);max-height:58px;overflow:hidden}
+    .tags{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+    .tag{padding:6px 8px;background:rgba(255,255,255,0.02);border-radius:999px;font-size:0.78rem;color:var(--muted)}
+
+    .output{margin-top:14px}
+    pre.code{background:#010612;padding:14px;border-radius:10px;color:#d9f3ff;white-space:pre-wrap;overflow:auto;border:1px solid rgba(255,255,255,0.04)}
+
+    .actions{display:flex;gap:8px;align-items:center}
+    .muted{color:var(--muted)}
+    footer{margin-top:28px;color:var(--muted);font-size:0.85rem;text-align:center}
+
+    .settings{display:flex;gap:8px;flex-direction:column}
+    label{font-size:0.82rem;color:var(--muted)}
+
+    /* accessible focus */
+    :focus{outline:3px solid rgba(255,107,0,0.16);outline-offset:2px}
+  </style>  <!-- Small helper: avoid sending API key in plain text when hosted on public repo. Use the UI to paste it in runtime or use a server-side proxy. --></head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">
+        <!-- small inline svg logo -->
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <rect width="24" height="24" rx="6" fill="url(#g)" />
+          <defs>
+            <linearGradient id="g" x1="0" x2="1">
+              <stop offset="0" stop-color="#ff6b00"/>
+              <stop offset="1" stop-color="#ff8e3c"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div>
+          <div class="brand">Free Fire Shorts Trend Finder</div>
+          <div class="small">Auto-generate SEO title, description & keywords for trending shorts</div>
+        </div>
+      </div>
+    </header><section class="hero" aria-labelledby="app-heading">
+  <h1 id="app-heading">Find trending Free Fire Shorts — Last <span id="daysLabel">3</span> days</h1>
+  <p class="small">Enter your YouTube Data API key below or paste it when prompted. (Tip: safest is to proxy requests through a server to keep the key secret.)</p>
+
+  <div style="height:10px"></div>
+  <div class="controls">
+    <div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="flex:1">
+          <label class="small">Search query</label>
+          <input id="query" type="text" value="Free Fire" aria-label="search query" placeholder="e.g. Free Fire" />
+        </div>
+        <div style="width:120px">
+          <label class="small">Max results</label>
+          <input id="maxResults" type="number" min="1" max="50" value="12" />
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+        <div style="flex:1">
+          <label class="small">Region (optional)</label>
+          <input id="regionCode" type="text" placeholder="e.g. IN, US - leave empty for global" maxlength="2" />
+        </div>
+        <div style="width:160px">
+          <label class="small">Last N days</label>
+          <input id="days" type="number" min="1" max="7" value="3" />
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+        <div style="flex:1">
+          <label class="small">API Key (paste here or click &quot;Use prompt&quot; to enter at runtime)</label>
+          <input id="apiKeyInput" type="text" placeholder="Paste YouTube Data API key here or leave blank" aria-label="YouTube API key" />
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="primary" id="findBtn">Find</button>
+          <button class="ghost" id="promptKeyBtn">Use prompt</button>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+        <label class="small">Mode</label>
+        <select id="mode">
+          <option value="aggregate">Aggregate (generate one set from all results)</option>
+          <option value="perVideo">Per-video suggestions</option>
+        </select>
+        <div style="flex:1"></div>
+      </div>
+
+    </div>
+
+    <aside class="settings">
+      <div class="small muted">Advanced / SEO settings</div>
+      <label class="small"><input id="includeHashtags" type="checkbox" checked /> Include hashtags from descriptions</label>
+      <label class="small"><input id="useTags" type="checkbox" checked /> Use uploader tags (if available)</label>
+      <label class="small"><input id="dedupe" type="checkbox" checked /> Dedupe keywords</label>
+
+      <div style="height:6px"></div>
+      <div class="small muted">Note: Storing API key in client is public. For a production site, deploy a tiny proxy (Node / serverless) to keep the key safe.</div>
+    </aside>
+  </div>
+
+
+  <div class="results" id="results" aria-live="polite"></div>
+
+  <div class="output" id="outputBlock" hidden>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3>Generated SEO Copy</h3>
+      <div class="actions">
+        <button class="ghost" id="copyBtn">Copy</button>
+        <button class="ghost" id="downloadBtn">Download .txt</button>
+      </div>
+    </div>
+
+    <pre class="code" id="generatedCode" tabindex="0" aria-label="generated seo code block"></pre>
+    <div style="height:10px"></div>
+    <div class="small muted">Tip: Click &quot;Copy&quot; to copy all. Use the generated title as the video title, description block as the YouTube description, and the keywords line for tags/keywords.</div>
+  </div>
+
+</section>
+
+<footer>
+  Built for GitHub Pages · Single-file app · SEO-friendly meta & JSON-LD · <span class="muted">Be mindful of quotas</span>
+</footer>
+
+  </div>  <script>
+  // ---------- Configuration & helpers ----------
+  // IMPORTANT: For public GitHub hosting you should NOT commit a production API key.
+  // Two options: (A) paste the API key in the UI at runtime, or (B) deploy a tiny serverless proxy
+  // and set API_KEY there; update fetchURL to your proxy.
+
+  const DEFAULT_API_KEY = '' // <-- optional: for local testing only. DON'T commit a real key.
+  const USE_PROXY = false    // set true if you create a proxy endpoint that forwards requests and hides key
+  const PROXY_URL = ''      // e.g. https://your-proxy.example/api/youtube
+
+  const elements = {
+    findBtn: document.getElementById('findBtn'),
+    promptKeyBtn: document.getElementById('promptKeyBtn'),
+    apiKeyInput: document.getElementById('apiKeyInput'),
+    query: document.getElementById('query'),
+    maxResults: document.getElementById('maxResults'),
+    results: document.getElementById('results'),
+    days: document.getElementById('days'),
+    regionCode: document.getElementById('regionCode'),
+    outputBlock: document.getElementById('outputBlock'),
+    generatedCode: document.getElementById('generatedCode'),
+    copyBtn: document.getElementById('copyBtn'),
+    downloadBtn: document.getElementById('downloadBtn'),
+    mode: document.getElementById('mode'),
+    includeHashtags: document.getElementById('includeHashtags'),
+    useTags: document.getElementById('useTags'),
+    dedupe: document.getElementById('dedupe'),
+    daysLabel: document.getElementById('daysLabel')
+  }
+
+  elements.days.addEventListener('input', ()=>{elements.daysLabel.textContent = elements.days.value})
+
+  elements.promptKeyBtn.addEventListener('click', async ()=>{
+    const k = prompt('Paste your YouTube Data API v3 key here (it will NOT be saved):')
+    if(k) elements.apiKeyInput.value = k.trim()
+  })
+
+  elements.findBtn.addEventListener('click', ()=>{ findShorts(); })
+  elements.copyBtn.addEventListener('click',()=>{ copyText(elements.generatedCode.textContent) })
+  elements.downloadBtn.addEventListener('click',()=>{ downloadText(elements.generatedCode.textContent, 'ff-shorts-seo.txt') })
+
+  // Utility: copy
+  async function copyText(s){
+    try{
+      await navigator.clipboard.writeText(s)
+      elements.copyBtn.textContent = 'Copied ✓'
+      setTimeout(()=>elements.copyBtn.textContent = 'Copy',1400)
+    }catch(e){
+      alert('Copy failed — please select and copy manually')
+    }
+  }
+  function downloadText(text, filename){
+    const blob = new Blob([text], {type:'text/plain;charset=utf-8'})
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url)
+  }
+
+  // ------------- YouTube API helpers ---------------
+  function getApiKey(){
+    if(USE_PROXY) return null; // proxy should handle the key
+    return (elements.apiKeyInput.value || DEFAULT_API_KEY).trim()
+  }
+
+  function isoDaysAgo(days){
+    const d = new Date(); d.setDate(d.getDate() - days); return d.toISOString()
+  }
+
+  async function fetchJson(url, opts){
+    const res = await fetch(url, opts)
+    if(!res.ok){
+      const body = await res.text().catch(()=>'');
+      throw new Error('HTTP '+res.status+': '+body)
+    }
+    return res.json()
+  }
+
+  async function searchVideos({q, maxResults=12, publishedAfter, regionCode}){
+    const params = new URLSearchParams({part:'snippet', q, type:'video', order:'viewCount', maxResults: String(maxResults), videoDuration:'short', publishedAfter})
+    if(regionCode) params.append('regionCode', regionCode)
+
+    if(USE_PROXY && PROXY_URL){
+      // when proxying, send the search params to the proxy which should call YouTube API
+      return fetchJson(PROXY_URL + '/search?' + params.toString())
+    }
+
+    const key = getApiKey()
+    if(!key) throw new Error('API key missing. Paste your YouTube Data API key in the API Key field or use a proxy.')
+    params.append('key', key)
+
+    const url = 'https://www.googleapis.com/youtube/v3/search?' + params.toString()
+    return fetchJson(url)
+  }
+
+  async function getVideosByIds(ids){
+    const params = new URLSearchParams({part:'snippet,statistics,contentDetails', id: ids.join(','), maxResults:'50'})
+    if(USE_PROXY && PROXY_URL){
+      return fetchJson(PROXY_URL + '/videos?' + params.toString())
+    }
+    const key = getApiKey(); if(!key) throw new Error('API key missing.'); params.append('key', key)
+    const url = 'https://www.googleapis.com/youtube/v3/videos?' + params.toString()
+    return fetchJson(url)
+  }
+
+  // -------------- Data processing / SEO heuristics --------------
+  const STOPWORDS = new Set(["the","a","an","and","or","for","to","in","on","of","with","is","this","that","by","from","as","it","its","be","up","at","are","was","but","not","you","your"])
+
+  function extractHashtags(text){
+    if(!text) return []
+    const re = /#([\p{L}0-9_\-]+)/gu
+    const out = []
+    try{
+      for(const m of text.matchAll(re)) out.push('#'+m[1])
+    }catch(e){
+      // fallback (older browsers): simple ASCII hashtags
+      const m2 = text.match(/#(\w+)/g) || []
+      return m2.map(s=>s)
+    }
+    return out
+  }
+
+  function tokenize(str){
+    if(!str) return []
+    return str.toLowerCase().replace(/[\u2018\u2019\u201C\u201D]/g,'').split(/[^\p{L}0-9]+/u).filter(Boolean).filter(w=>!STOPWORDS.has(w) && w.length>1)
+  }
+
+  function topNFromMap(map, n=12){
+    const arr = Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,n).map(x=>x[0])
+    return arr
+  }
+
+  function aggregateKeywords(videos, opts={includeHashtags:true,useTags:true,dedupe:true}){
+    const freq = {}
+    for(const v of videos){
+      const snip = v.snippet || {}
+      const title = snip.title || ''
+      const desc = snip.description || ''
+      const tags = snip.tags || []
+
+      // title tokens
+      for(const t of tokenize(title)) freq[t] = (freq[t]||0)+3
+      // desc tokens
+      for(const t of tokenize(desc)) freq[t] = (freq[t]||0)+1
+      // uploader tags
+      if(opts.useTags && tags.length){
+        for(const t of tags){
+          const key = t.toLowerCase().trim(); if(!key) continue; freq[key] = (freq[key]||0)+4
+        }
+      }
+      // hashtags
+      if(opts.includeHashtags){
+        const hs = extractHashtags(desc)
+        for(const h of hs){ const key = h.replace('#','').toLowerCase(); if(!key) continue; freq[key] = (freq[key]||0)+5 }
+      }
+    }
+
+    // optionally dedupe exact duplicates
+    if(opts.dedupe){
+      // map keys already deduped
+    }
+    return freq
+  }
+
+  function generateTitle(topKeywords){
+    // Craft a punchy title with 50-80 chars target
+    if(!topKeywords.length) return 'Free Fire Short — Trending Moments #shorts'
+    const primary = topKeywords[0]
+    const secondary = topKeywords.slice(1,3).join(' | ')
+    const candidate = `${capitalize(primary)} — ${secondary ? secondary + ' | ' : ''}Free Fire Short #shorts`
+    return candidate.slice(0,100)
+  }
+
+  function generateDescription(topKeywords, videos){
+    const topTags = topKeywords.slice(0,10)
+    const hashtags = topTags.filter(Boolean).slice(0,8).map(t=> (t.startsWith('#')? t : '#'+t.replace(/\s+/g,'')) )
+    const intro = `🔥 Watch the top trending Free Fire Shorts from the last ${elements.days.value} days — quick clips, epic plays and tips to level up your game.`
+    const bullets = []
+    bullets.push(`⭐ Highlights: ${topTags.slice(0,6).join(', ')}`)
+    bullets.push(`📺 More on our channel — subscribe for daily Free Fire shorts and guides.`)
+    const cta = `👉 Like, comment your favorite clip and subscribe!`;
+    return [intro, bullets.join('\n'), cta, hashtags.join(' ')].join('\n\n')
+  }
+
+  function generateKeywordsString(freqMap, limit=20){
+    const top = topNFromMap(freqMap, limit)
+    // sanitize and ensure comma-separated
+    const cleaned = top.map(t=>t.replace(/^#+/,'').trim()).filter(Boolean)
+    return '"' + cleaned.join(', ') + '"'
+  }
+
+  function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1) }
+
+  // -------------- UI renderers --------------
+  function showLoading(){ elements.results.innerHTML = '<div class="small muted">Loading — fetching trending shorts...</div>' }
+  function showError(err){ elements.results.innerHTML = `<div class="small" style="color:#ffb4a6">Error: ${String(err).slice(0,200)}</div>` }
+
+  function renderVideosList(videos){
+    if(!videos || videos.length===0){ elements.results.innerHTML = '<div class="small muted">No shorts found for this query & time range.</div>'; return }
+    elements.results.innerHTML = ''
+    for(const v of videos){
+      const t = v.snippet || {};
+      const thumb = t.thumbnails?.medium?.url || t.thumbnails?.default?.url || ''
+      const div = document.createElement('div'); div.className = 'card'
+      div.innerHTML = `
+        <div class="thumb"><img src="${thumb}" alt="thumbnail" width="140" height="80" style="width:100%;height:100%;object-fit:cover"></div>
+        <div class="meta">
+          <h4>${escapeHtml(t.title || '(no title)')}</h4>
+          <p class="muted">Channel: ${escapeHtml(t.channelTitle || '')} • ${timeAgo(v.snippet?.publishedAt)}</p>
+          <p>${escapeHtml((t.description||'').slice(0,220))}${(t.description||'').length>220 ? '...' : ''}</p>
+          <div class="tags">${(t.tags || []).slice(0,8).map(tag=>`<span class="tag">${escapeHtml(tag)}</span>`).join('')}
+          ${extractHashtags(t.description||'').slice(0,6).map(h=>`<span class="tag">${escapeHtml(h)}</span>`).join('')}
+          </div>
+        </div>
+      `
+      elements.results.appendChild(div)
+    }
+  }
+
+  function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') }
+
+  function timeAgo(iso){ if(!iso) return '';
+    const d = new Date(iso); const diff = Math.floor((Date.now()-d.getTime())/1000);
+    if(diff < 60) return diff + 's ago';
+    if(diff < 3600) return Math.floor(diff/60) + 'm ago';
+    if(diff < 86400) return Math.floor(diff/3600) + 'h ago';
+    return Math.floor(diff/86400) + 'd ago';
+  }
+
+  // --------------- Core flow ---------------
+  async function findShorts(){
+    const q = elements.query.value.trim() || 'Free Fire'
+    const maxResults = Math.min(50, Math.max(1, Number(elements.maxResults.value) || 12))
+    const days = Math.min(7, Math.max(1, Number(elements.days.value) || 3))
+    const publishedAfter = isoDaysAgo(days)
+    const regionCode = elements.regionCode.value.trim() || undefined
+    elements.outputBlock.hidden = true
+    showLoading()
+
+    try{
+      const searchData = await searchVideos({q, maxResults, publishedAfter, regionCode})
+      const videoIds = (searchData.items || []).map(it=> (it.id && it.id.videoId) || it.id ).filter(Boolean)
+      if(videoIds.length===0){ renderVideosList([]); return }
+      const videosData = await getVideosByIds(videoIds.slice(0,50))
+      const videos = videosData.items || []
+
+      // render list
+      renderVideosList(videos)
+
+      // aggregate and generate SEO copy
+      const freq = aggregateKeywords(videos, {includeHashtags: elements.includeHashtags.checked, useTags: elements.useTags.checked, dedupe: elements.dedupe.checked})
+      const topKeywords = topNFromMap(freq, 20)
+
+      if(elements.mode.value === 'perVideo'){
+        // per-video generate: combine each video's top tokens
+        let out = ''
+        for(const v of videos){
+          const snip = v.snippet||{}
+          const perFreq = aggregateKeywords([v], {includeHashtags: elements.includeHashtags.checked, useTags: elements.useTags.checked, dedupe: elements.dedupe.checked})
+          const perTop = topNFromMap(perFreq, 8)
+          const t = generateTitle(perTop)
+          const d = generateDescription(perTop, [v])
+          const k = generateKeywordsString(perFreq, 12)
+          out += `Title: ${t}\nDescription:\n${d}\nKeywords: ${k}\n\n`;
+        }
+        elements.generatedCode.textContent = out
+        elements.outputBlock.hidden = false
+        window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})
+        return
+      }
+
+      // aggregate single result
+      const title = generateTitle(topKeywords)
+      const description = generateDescription(topKeywords, videos)
+      const keywords = generateKeywordsString(freq, 25)
+
+      const final = `Title: ${title}\n\nDescription:\n${description}\n\nKeywords: ${keywords}`
+      elements.generatedCode.textContent = final
+      elements.outputBlock.hidden = false
+      window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})
+
+    }catch(err){
+      showError(err.message || err)
+    }
+  }
+
+  // small helper to avoid errors in older browsers
+  if(!String.prototype.replaceAll){
+    String.prototype.replaceAll = function(str, newStr){ return this.split(str).join(newStr) }
+  }
+
+  // ---------- friendly startup / cache -----------
+  (function(){
+    // show basic instructions in results area
+    elements.results.innerHTML = '<div class="small muted">Click &quot;Find&quot; to fetch trending Free Fire Shorts from YouTube (last N days). Configure API key above.</div>'
+    // restore last used query from localStorage
+    try{ const s = localStorage.getItem('fftf:query'); if(s) elements.query.value = s }catch(e){}
+    elements.findBtn.addEventListener('click', ()=>{ try{ localStorage.setItem('fftf:query', elements.query.value) }catch(e){} })
+  })()
+
+  </script></body>
+</html>
