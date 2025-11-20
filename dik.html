@@ -136,33 +136,43 @@
 
     .sr-only{ position:absolute; left:-9999px; width:1px; height:1px; top:auto; overflow:hidden; }
 
-    /* ANDROID FIX — Thumbnail size corrector */
-.video-thumb {
-  width: 100%;
-  max-width: 100% !important;
-  height: auto !important;
-  flex: 0 0 auto !important;
-}
-
-/* Force correct scaling on Android */
-.video-thumb img {
-  width: 100% !important;
-  height: auto !important;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-}
-
-/* Fix flex-row breaking layout on Android */
 .video-row {
   width: 100%;
   display: block !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  margin: 0 0 20px 0 !important;
 }
 
-/* Restore flex on desktop/tablet */
-@media (min-width: 700px) {
-  .video-row {
-    display: flex !important;
-  }
+/* Thumbnail wrapper */
+.video-thumb {
+  width: 100% !important;
+  height: auto !important;
+  border-radius: 14px;
+  overflow: hidden !important;
+  background: #111;
+  position: relative;
+}
+
+/* Hard-force 16:9 with padding hack (Android safe) */
+.video-thumb::before {
+  content: "";
+  display: block;
+  padding-top: 56.25%; /* 16:9 ratio */
+}
+
+/* Image stays inside padding box */
+.video-thumb img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* Meta section under the video */
+.video-meta {
+  padding: 10px 6px 16px 6px !important;
 }
   </style>
 </head>
