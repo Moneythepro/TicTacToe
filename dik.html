@@ -135,6 +135,35 @@
     .confirm-card{ width:min(520px,92vw); background:#fff; color:#111; padding:16px; border-radius:12px; box-shadow:0 40px 120px rgba(0,0,0,0.6); }
 
     .sr-only{ position:absolute; left:-9999px; width:1px; height:1px; top:auto; overflow:hidden; }
+
+    /* ANDROID FIX — Thumbnail size corrector */
+.video-thumb {
+  width: 100%;
+  max-width: 100% !important;
+  height: auto !important;
+  flex: 0 0 auto !important;
+}
+
+/* Force correct scaling on Android */
+.video-thumb img {
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+/* Fix flex-row breaking layout on Android */
+.video-row {
+  width: 100%;
+  display: block !important;
+}
+
+/* Restore flex on desktop/tablet */
+@media (min-width: 700px) {
+  .video-row {
+    display: flex !important;
+  }
+}
   </style>
 </head>
 <body>
