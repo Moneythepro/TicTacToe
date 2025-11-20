@@ -74,119 +74,99 @@
     .layout { display:grid; grid-template-columns: 1fr 340px; gap:20px; margin-top:18px; align-items:start; }
     @media (max-width:1000px){ .layout{ grid-template-columns:1fr; } .hl-item{ flex:0 0 calc((100% / 2) - 10px); max-width: calc((100% / 2) - 10px); } }
 
-/* ===========================================================
-   FIXED — UNIVERSAL RESPONSIVE VIDEO LIST (Android + iOS safe)
-   Uses padding-box 16:9 thumbnails + clean mobile stacking
-=========================================================== */
+/* ----------------------------------------------
+   Video List — Android-Safe 16:9 Layout
+---------------------------------------------- */
 
-/* video list wrapper */
-.video-list {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  width: 100%;
+/* container */
+.video-list{
+  display:flex;
+  flex-direction:column;
+  gap:22px;
 }
 
-/* one video block */
-.video-row {
-  width: 100%;
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 12px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.02);
-  cursor: pointer;
-  transition: transform .12s, box-shadow .12s;
+/* wrapper */
+.video-row{
+  width:100%;
+  display:block !important;
+  overflow:hidden !important;
+  padding:0 !important;
+  margin:0 0 18px 0 !important;
+  border-radius:12px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.02);
+  cursor:pointer;
+  transition:transform .12s, box-shadow .12s;
 }
-.video-row:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 18px 48px rgba(0,0,0,0.6);
-}
-
-
-.video-thumb {
-  position: relative;
-  width: 100%;
-  max-width: var(--thumb-max);
-  border-radius: 12px;
-  overflow: hidden;
-  background: #111;
-  flex-shrink: 0;
+.video-row:hover{
+  transform:translateY(-4px);
+  box-shadow:0 18px 48px rgba(0,0,0,0.55);
 }
 
-/* perfect 16:9 box that works on ALL devices */
-.video-thumb::before {
-  content: "";
-  display: block;
-  padding-top: 56.25%; /* 16:9 */
+/* thumbnail wrapper */
+.video-thumb{
+  position:relative;
+  width:100% !important;
+  border-radius:14px;
+  background:#111;
+  overflow:hidden;
 }
 
-/* real image placed over padding box */
-.video-thumb img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+/* perfect 16:9 box */
+.video-thumb::before{
+  content:"";
+  display:block;
+  padding-top:56.25%;
 }
 
-/* video details */
-.video-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-}
-.video-title {
-  font-style: italic;
-  font-weight: 800;
-  font-size: 16px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: var(--text);
+/* actual image */
+.video-thumb img{
+  position:absolute;
+  inset:0;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
 }
 
-.channel-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.channel-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-.channel-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+/* meta section */
+.video-meta{
+  padding:12px 6px 18px 6px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
 }
 
-.video-cat {
-  font-size: 13px;
-  color: var(--muted);
+.video-title{
+  font-style:italic;
+  font-weight:800;
+  font-size:16px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-@media (max-width: 640px) {
-  :root { --thumb-max: 100%; }
-
-  .video-row {
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-  }
-
-  .video-thumb {
-    width: 100%;
-    max-width: 100%;
-  }
+.channel-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
 }
+.channel-avatar{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  overflow:hidden;
+}
+.channel-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.video-cat{
+  font-size:13px;
+  color:var(--muted);
+}
+
 
     /* side menu */
     .side-backdrop { position:fixed; inset:0; z-index:200; display:none; background:rgba(0,0,0,0.4); }
