@@ -74,99 +74,183 @@
     .layout { display:grid; grid-template-columns: 1fr 340px; gap:20px; margin-top:18px; align-items:start; }
     @media (max-width:1000px){ .layout{ grid-template-columns:1fr; } .hl-item{ flex:0 0 calc((100% / 2) - 10px); max-width: calc((100% / 2) - 10px); } }
 
-/* ----------------------------------------------
-   Video List — Android-Safe 16:9 Layout
----------------------------------------------- */
+/* ===========================================================
+   FINAL — Mobile-compatible, Android-safe video list CSS
+   - Replace any older .video-row / .video-thumb rules with this block
+   - Caps thumbnail height on small screens to avoid huge visuals
+   - Padding-box 16:9 approach (most reliable)
+=========================================================== */
 
-/* container */
-.video-list{
-  display:flex;
-  flex-direction:column;
-  gap:22px;
-}
-
-/* wrapper */
-.video-row{
-  width:100%;
-  display:block !important;
-  overflow:hidden !important;
-  padding:0 !important;
-  margin:0 0 18px 0 !important;
-  border-radius:12px;
-  background:rgba(255,255,255,0.02);
-  border:1px solid rgba(255,255,255,0.02);
-  cursor:pointer;
-  transition:transform .12s, box-shadow .12s;
-}
-.video-row:hover{
-  transform:translateY(-4px);
-  box-shadow:0 18px 48px rgba(0,0,0,0.55);
+/* video list wrapper */
+.video-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
 }
 
-/* thumbnail wrapper */
-.video-thumb{
-  position:relative;
-  width:100% !important;
-  border-radius:14px;
-  background:#111;
-  overflow:hidden;
+/* Each video row: desktop: flex (thumb + meta), mobile: stacked */
+.video-row {
+  width: 100%;
+  display: flex;                 /* desktop defaults to horizontal */
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.02);
+  cursor: pointer;
+  transition: transform .12s, box-shadow .12s;
+  box-sizing: border-box;
+  overflow: visible;
+}
+.video-row:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 48px rgba(0,0,0,0.6);
 }
 
-/* perfect 16:9 box */
-.video-thumb::before{
-  content:"";
-  display:block;
-  padding-top:56.25%;
+/* THUMBNAIL WRAPPER: reliable 16:9 padding-box */
+.video-thumb {
+  position: relative;
+  width: 40%;                    /* desktop: thumbnail occupies left column */
+  max-width: var(--thumb-max, 520px);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #111;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
-/* actual image */
-.video-thumb img{
-  position:absolute;
-  inset:0;
-  width:100% !important;
-  height:100% !important;
-  object-fit:cover !important;
+/* maintain perfect 16:9 ratio using the padding-top trick */
+.video-thumb::before {
+  content: "";
+  display: block;
+  padding-top: 56.25%;           /* 16:9 */
 }
 
-/* meta section */
-.video-meta{
-  padding:12px 6px 18px 6px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
+/* image sits absolutely inside the padding-box */
+.video-thumb img {
+  position: absolute !important;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+  -webkit-backface-visibility: hidden; /* Android rendering safety */
+  backface-visibility: hidden;
 }
 
-.video-title{
-  font-style:italic;
-  font-weight:800;
-  font-size:16px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+/* VIDEO META (title, channel, category) */
+.video-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 60%;
+  min-width: 0;                 /* important for ellipsis */
+  box-sizing: border-box;
+  padding: 2px 4px;
+}
+.video-title {
+  font-style: italic;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.channel-row{
-  display:flex;
-  align-items:center;
-  gap:8px;
+/* channel row */
+.channel-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.channel-avatar{
-  width:28px;
-  height:28px;
-  border-radius:50%;
-  overflow:hidden;
+.channel-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
 }
-.channel-avatar img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.video-cat{
-  font-size:13px;
-  color:var(--muted);
+.channel-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
+.video-cat {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* -----------------------------
+   Mobile / small-screen rules
+   ----------------------------- */
+@media (max-width: 700px) {
+  /* stack rows vertically on small screens */
+  .video-row {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  /* thumbnail becomes full width */
+  .video-thumb {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 12px;
+  }
+
+  /* Limit on-screen thumbnail height so images never appear gigantic */
+  /* The height will still follow 16:9 up to this cap. Adjust the viewport percent if you want shorter thumbnails. */
+  .video-thumb {
+    max-height: calc(48vw); /* roughly half the viewport height (mobile safe) */
+    /* If padding-top would force taller, the max-height will cap the wrapper */
+    overflow: hidden;
+  }
+
+  /* Ensure the absolutely positioned image respects the max height */
+  .video-thumb img {
+    position: absolute !important;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: auto !important;
+    height: 100% !important;
+    max-width: 100%;
+  }
+
+  /* meta area under the thumb */
+  .video-meta {
+    width: 100%;
+  }
+
+  .video-title {
+    font-size: 15px;
+    white-space: normal; /* allow multi-line title on small screens */
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* -----------------------------
+   Extra safety: override any earlier conflicting rules
+   (Only if you still see broken behavior — you can remove !important later)
+   ----------------------------- */
+.video-list, .video-row, .video-thumb, .video-thumb::before, .video-thumb img, .video-meta {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Optionally: limit absolute maximum thumbnail height on very tall screens */
+@media (min-width: 701px) {
+  .video-thumb { max-height: 420px; } /* prevents extreme heights on large widths */
+}
 
     /* side menu */
     .side-backdrop { position:fixed; inset:0; z-index:200; display:none; background:rgba(0,0,0,0.4); }
