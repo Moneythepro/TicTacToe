@@ -74,12 +74,6 @@
     .layout { display:grid; grid-template-columns: 1fr 340px; gap:20px; margin-top:18px; align-items:start; }
     @media (max-width:1000px){ .layout{ grid-template-columns:1fr; } .hl-item{ flex:0 0 calc((100% / 2) - 10px); max-width: calc((100% / 2) - 10px); } }
 
-/* ===========================================================
-   FINAL — Mobile-compatible, Android-safe video list CSS
-   - Replace any older .video-row / .video-thumb rules with this block
-   - Caps thumbnail height on small screens to avoid huge visuals
-   - Padding-box 16:9 approach (most reliable)
-=========================================================== */
 
 /* video list wrapper */
 .video-list {
@@ -89,10 +83,10 @@
   width: 100%;
 }
 
-/* Each video row: desktop: flex (thumb + meta), mobile: stacked */
+/* Each video row: desktop = horizontal, mobile = stacked */
 .video-row {
   width: 100%;
-  display: flex;                 /* desktop defaults to horizontal */
+  display: flex;
   gap: 12px;
   align-items: flex-start;
   padding: 12px;
@@ -102,54 +96,53 @@
   cursor: pointer;
   transition: transform .12s, box-shadow .12s;
   box-sizing: border-box;
-  overflow: visible;
 }
 .video-row:hover {
   transform: translateY(-4px);
   box-shadow: 0 18px 48px rgba(0,0,0,0.6);
 }
 
-/* THUMBNAIL WRAPPER: reliable 16:9 padding-box */
+/* THUMBNAIL WRAPPER — reliable 16:9 block */
 .video-thumb {
   position: relative;
-  width: 40%;                    /* desktop: thumbnail occupies left column */
+  width: 40%;
   max-width: var(--thumb-max, 520px);
   border-radius: 10px;
   overflow: hidden;
   background: #111;
   flex-shrink: 0;
-  box-sizing: border-box;
 }
 
-/* maintain perfect 16:9 ratio using the padding-top trick */
+/* 16:9 using padding-box (Android/iOS safe) */
 .video-thumb::before {
   content: "";
   display: block;
-  padding-top: 56.25%;           /* 16:9 */
+  padding-top: 56.25%; /* 16:9 */
 }
 
-/* image sits absolutely inside the padding-box */
+/* image fills the padding-box */
 .video-thumb img {
   position: absolute !important;
-  top: 0; left: 0; right: 0; bottom: 0;
+  inset: 0;
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
   display: block !important;
-  -webkit-backface-visibility: hidden; /* Android rendering safety */
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
 
-/* VIDEO META (title, channel, category) */
+/* video meta (title + channel + category) */
 .video-meta {
   display: flex;
   flex-direction: column;
   gap: 6px;
   width: 60%;
-  min-width: 0;                 /* important for ellipsis */
+  min-width: 0;
   box-sizing: border-box;
   padding: 2px 4px;
 }
+
 .video-title {
   font-style: italic;
   font-weight: 800;
@@ -184,72 +177,64 @@
   color: var(--muted);
 }
 
-/* -----------------------------
-   Mobile / small-screen rules
-   ----------------------------- */
+/* ------------------------------------------
+   MOBILE — clean stacking & perfect 16:9
+------------------------------------------ */
 @media (max-width: 700px) {
-  /* stack rows vertically on small screens */
   .video-row {
     flex-direction: column;
-    align-items: stretch;
     padding: 10px;
     gap: 10px;
   }
 
-  /* thumbnail becomes full width */
   .video-thumb {
     width: 100% !important;
     max-width: 100% !important;
     border-radius: 12px;
   }
 
-  /* Limit on-screen thumbnail height so images never appear gigantic */
-  /* The height will still follow 16:9 up to this cap. Adjust the viewport percent if you want shorter thumbnails. */
-  .video-thumb {
-    max-height: calc(48vw); /* roughly half the viewport height (mobile safe) */
-    /* If padding-top would force taller, the max-height will cap the wrapper */
-    overflow: hidden;
+  /* keep pure 16:9 — DO NOT CAP HEIGHT */
+  .video-thumb::before {
+    padding-top: 56.25%;
   }
 
-  /* Ensure the absolutely positioned image respects the max height */
   .video-thumb img {
-    position: absolute !important;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: auto !important;
+    inset: 0;
+    width: 100% !important;
     height: 100% !important;
-    max-width: 100%;
+    object-fit: cover !important;
   }
 
-  /* meta area under the thumb */
   .video-meta {
     width: 100%;
   }
 
   .video-title {
     font-size: 15px;
-    white-space: normal; /* allow multi-line title on small screens */
+    white-space: normal;
     -webkit-line-clamp: 2;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
   }
 }
 
-/* -----------------------------
-   Extra safety: override any earlier conflicting rules
-   (Only if you still see broken behavior — you can remove !important later)
-   ----------------------------- */
-.video-list, .video-row, .video-thumb, .video-thumb::before, .video-thumb img, .video-meta {
+/* Extra safety (you can remove if everything works) */
+.video-list,
+.video-row,
+.video-thumb,
+.video-thumb::before,
+.video-thumb img,
+.video-meta {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Optionally: limit absolute maximum thumbnail height on very tall screens */
+/* Desktop hard height cap (optional) */
 @media (min-width: 701px) {
-  .video-thumb { max-height: 420px; } /* prevents extreme heights on large widths */
+  .video-thumb {
+    max-height: 420px;
+  }
 }
 
     /* side menu */
