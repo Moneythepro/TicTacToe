@@ -298,6 +298,20 @@
     height: 100% !important;
     object-fit: cover !important;
 }
+    /* Remove focus glow/blue highlight from search box */
+.search-input,
+.search-input:focus,
+.search-card:focus-within,
+input:focus,
+textarea:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+    .search-card {
+    outline: none !important;
+    box-shadow: none !important;
+    }
     
   </style>
 </head>
