@@ -1,522 +1,631 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Community — Video Player</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Community — Video Player</title>
 
-<!-- Fonts & Lucide -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+  <!-- Fonts & Lucide icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
 
-<!-- No light theme: dark-only page -->
-<style>
-  :root{
-    --bg-color: #000000;
-    --panel: rgba(255,255,255,0.02);
-    --muted: #9aa0a6;
-    --text: #eef7ff;
-    --accent: #3ec7ff;
-    --gold: #f6d27a;
-    --maxw: 1150px;
-    --hdr-h: 64px;
-    --gap: 12px;
-  }
+  <!-- Firebase compat (used for Firestore community_videos collection) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-  /* Global: square corners - enforce */
-  *{ box-sizing: border-box; border-radius: 0 !important; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
-  html,body{ height:100%; margin:0; background:var(--bg-color); color:var(--text); font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+  <meta name="theme-color" content="#000000" />
 
-  /* fixed background images: portrait/landscape */
-  body {
-    background-image: url('sp-vertical.png');
-    background-attachment: fixed;
-    background-size: cover;
-    background-position: center center;
-  }
-  @media (orientation: landscape) {
-    body { background-image: url('sp-horizontal.png'); }
-  }
+  <style>
+    /* =============================
+       Boombae — Community Video Player
+       - Dark-only
+       - Square corners everywhere
+       - Fixed, full-bleed 16:9 player at very top (touching edges)
+       - All UI panels: glass black (square)
+       - Background images (non-scrolling) for portrait/landscape:
+         sp-vertical.png and sp-horizontal.png
+       - Recommendations: ONLY Firestore 'community_videos' (random)
+       ============================= */
 
-  /* header */
-  header.site-header {
-    position: fixed; inset: 0 0 auto 0; height: var(--hdr-h); display:flex; align-items:center; gap:12px;
-    padding:0 14px; background: linear-gradient(90deg, rgba(0,0,0,0.55), rgba(0,0,0,0.45)); border-bottom:1px solid rgba(255,255,255,0.03); z-index:1200;
-  }
-  .header-inner { width:100%; max-width:var(--maxw); margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; }
-  .left-controls { display:flex; gap:8px; align-items:center; }
-  .title { font-family:"Space Grotesk", Inter, sans-serif; font-weight:700; font-size:18px; color:var(--gold); line-height:1; margin:0; }
-  .subtitle { font-size:12px; color:var(--muted); margin-top:2px; }
+    :root{
+      --black: #000000;
+      --panel-glass: rgba(0,0,0,0.60); /* glass black */
+      --panel-border: rgba(255,255,255,0.04);
+      --muted: #9aa0a6;
+      --accent: #ff3b30;
+      --maxw: 1200px;
+      --gap: 12px;
+    }
 
-  /* icon-only buttons: no background */
-  .icon-btn { width:40px; height:40px; display:inline-grid; place-items:center; border:0; background:transparent; color:var(--text); cursor:pointer; }
-  .icon-btn:active{ transform:translateY(1px); }
+    /* Force square corners everywhere */
+    * { box-sizing: border-box; border-radius: 0 !important; }
 
-  /* main page layout */
-  main.page { width:100%; max-width:var(--maxw); margin: calc(var(--hdr-h) + 18px) auto 48px; padding:12px; }
-  .container { display:block; gap:var(--gap); }
-  @media(min-width:1000px){ .container { display:grid; grid-template-columns: 1fr 360px; gap:22px; } }
+    html,body{
+      height:100%;
+      margin:0;
+      padding:0;
+      background: var(--black);
+      color:#fff;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      -webkit-text-size-adjust:100%;
+      -ms-text-size-adjust:100%;
+    }
 
-  /* full-width sticky player -- option 2 */
-  .player-wrap {
-    position: sticky;
-    top: calc(var(--hdr-h) + 12px);
-    z-index:1100;
-    background:#000;
-    border:1px solid rgba(255,255,255,0.03);
-    overflow:hidden;
-  }
-  .player-inner { width:100%; height:0; padding-bottom:56.25%; position:relative; } /* 16:9 */
-  .player-iframe { position:absolute; inset:0; width:100%; height:100%; border:0; background:#000; display:block; }
+    /* Fixed full-screen background images (non-scrollable) */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-position: center center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      pointer-events: none;
+      /* fallback color if images missing */
+      background-color: #000;
+      filter: none;
+      opacity: 1;
+    }
+    /* portrait -> vertical image */
+    @media (orientation: portrait) {
+      body::before { background-image: url('sp-vertical.png'); }
+    }
+    /* landscape -> horizontal image */
+    @media (orientation: landscape) {
+      body::before { background-image: url('sp-horizontal.png'); }
+    }
 
-  /* meta / controls below player */
-  .meta-card { background: var(--panel); border:1px solid rgba(255,255,255,0.03); padding:12px; margin-top:12px; }
-  .video-title { margin:0; font-size:20px; font-weight:800; color:var(--text); line-height:1.1; }
-  .stats-row { display:flex; gap:12px; align-items:center; margin-top:8px; flex-wrap:wrap; }
-  .pill { font-weight:800; padding:6px 10px; border:1px solid rgba(255,255,255,0.03); background:transparent; color:var(--muted); }
+    /* top fixed player (full-bleed width, 16:9) */
+    .video-fixed {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      /* default 16:9 by viewport width */
+      height: calc(100vw * 9 / 16);
+      background: #000;
+      z-index: 1200; /* above background, below UI overlays */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 0;
+    }
+    /* on wide screens prefer a height relative to viewport */
+    @media (min-width: 1000px) {
+      .video-fixed { height: 56vh; }
+    }
+    .video-fixed iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
 
-  .channel-row { display:flex; gap:12px; align-items:center; margin-top:12px; }
-  .avatar { width:56px; height:56px; background:#111; flex-shrink:0; overflow:hidden; }
-  .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+    /* main content container (scrollable) sits beneath the fixed video */
+    main.app {
+      position: relative;
+      z-index: 1250; /* above video and background */
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 20px;
+      /* top padding must match current .video-fixed computed height (set by JS) */
+      padding-top: calc(var(--player-height, 360px) + 20px);
+      min-height: calc(100vh - 20px);
+    }
 
-  /* description */
-  .desc { margin-top:12px; color:var(--text); font-size:14px; line-height:1.5; white-space:pre-line; }
-  .desc-collapsed { max-height:64px; overflow:hidden; }
-  .desc-toggle { display:inline-block; margin-top:8px; color:var(--accent); cursor:pointer; font-weight:800; }
+    /* glass-black panels (square) */
+    .panel {
+      background: var(--panel-glass);
+      border: 1px solid var(--panel-border);
+      padding: 14px;
+      margin-bottom: 14px;
+      color: #fff;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    }
 
-  /* recommendations on right column */
-  .aside { }
-  .recs-card { background:var(--panel); border:1px solid rgba(255,255,255,0.03); padding:12px; }
-  .rec-item { display:flex; gap:10px; align-items:flex-start; padding:8px 6px; cursor:pointer; border-bottom:1px dashed rgba(255,255,255,0.02); }
-  .rec-item:last-child{ border-bottom:0; }
-  .rec-thumb { width:120px; height:68px; background:#111; flex-shrink:0; overflow:hidden; }
-  .rec-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
-  .rec-meta { display:flex; flex-direction:column; min-width:0; }
-  .rec-title { font-weight:800; font-size:13px; color:var(--text); line-height:1.15; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+    /* meta & controls */
+    .meta { display:flex; flex-direction:column; gap:10px; }
+    .title { font-family: "Space Grotesk", Inter, sans-serif; font-weight:800; font-size:20px; margin:0; color:#fff; line-height:1.15; }
+    .sub { font-size:13px; color: var(--muted); }
+    .meta-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .pill { padding:6px 10px; font-weight:800; font-size:13px; background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.02); color:#fff; }
 
-  /* mobile recommendations under content */
-  .recs-mobile { margin-top:14px; background:var(--panel); border:1px solid rgba(255,255,255,0.03); padding:10px; }
+    /* description */
+    .desc { color: #dbe2e6; font-size:14px; line-height:1.45; white-space:pre-wrap; word-break:break-word; max-height: none; }
+    .desc-collapsed { max-height: 120px; overflow: hidden; }
 
-  /* footer spacing */
-  footer.site-foot { margin-top:18px; text-align:center; color:var(--muted); font-size:13px; }
+    /* recommendations list */
+    .recs { display:flex; flex-direction:column; gap:10px; }
+    .rec { display:flex; gap:10px; align-items:flex-start; cursor:pointer; padding:8px; border:1px solid rgba(255,255,255,0.02); background: rgba(0,0,0,0.35); }
+    .rec:hover { background: rgba(255,255,255,0.02); }
+    .rec-thumb { width:150px; height:84px; background:#111; flex-shrink:0; display:block; }
+    .rec-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+    .rec-title { font-weight:800; font-size:14px; color:#fff; }
 
-  /* ensure icons inherit color and have no background */
-  svg, svg * { stroke: currentColor; fill: none; color: inherit; }
+    /* layout responsiveness */
+    .grid {
+      display:block;
+      gap:12px;
+    }
+    @media (min-width: 1000px) {
+      .grid { display:grid; grid-template-columns: 1fr 360px; gap:18px; align-items:start; }
+    }
 
-  /* accessibility focus */
-  :focus { outline: 2px solid rgba(62,199,255,0.12); outline-offset:2px; }
+    /* utility */
+    .right-col { position: sticky; top: calc(var(--player-height, 360px) + 20px); } /* keeps recommendations visually below player */
+    .muted { color: var(--muted); font-weight:700; }
 
-  /* small screens tweaks */
-  @media(max-width:640px){
-    .container { display:block; }
-    .rec-thumb { width:100px; height:56px; }
-    .avatar { width:48px; height:48px; }
-    .player-wrap{ top: calc(var(--hdr-h) + 8px); }
-  }
+    /* small screens tweaks */
+    @media (max-width:420px) {
+      .rec-thumb { width:120px; height:66px; }
+    }
 
-  /* remove scroll from background (background-attachment fixed handles it). nothing extra needed */
-</style>
+    /* ensure lucide SVGs inherit color */
+    svg, svg * { color: inherit; stroke: currentColor; fill: none; }
+
+    /* make links obvious on glass */
+    a.glass-link { color: #8fd6ff; font-weight:700; text-decoration: none; }
+    a.glass-link:hover { text-decoration: underline; }
+
+    /* accessibility focus outlines */
+    :focus { outline: 3px solid rgba(255,255,255,0.06); outline-offset:2px; }
+
+  </style>
 </head>
 <body>
-
-<!-- Header -->
-<header class="site-header" role="banner" aria-label="Top bar">
-  <div class="header-inner">
-    <div class="left-controls" style="align-items:center;">
-      <button id="backBtn" class="icon-btn" aria-label="Back" title="Back">
-        <svg data-lucide="arrow-left" width="18" height="18"></svg>
-      </button>
-      <div style="margin-left:8px;">
-        <div class="title">Boombae Game Store</div>
-        <div class="subtitle" id="headerSubtitle">Community Videos</div>
-      </div>
-    </div>
-
-    <div style="display:flex;align-items:center;gap:8px;">
-      <button id="shareBtn" class="icon-btn" aria-label="Share" title="Share">
-        <svg data-lucide="share-2" width="18" height="18"></svg>
-      </button>
-      <button id="themeBtn" class="icon-btn" aria-label="Toggle theme" title="Toggle theme" style="display:none" aria-hidden="true">
-        <svg data-lucide="sun" width="18" height="18"></svg>
-      </button>
-    </div>
+  <!-- FIXED 16:9 VIDEO (touches viewport edges, no corners) -->
+  <div id="videoFixed" class="video-fixed" aria-label="Video player (fixed top)">
+    <!-- iframe appended by JS -->
   </div>
-</header>
 
-<!-- Page -->
-<main class="page" role="main" aria-live="polite">
-  <div class="container">
+  <!-- Main scrollable content beneath player -->
+  <main class="app" id="app" role="main" aria-live="polite">
+    <div class="grid">
 
-    <!-- Left column: player + meta + description -->
-    <div>
-      <!-- Player (full width, sticky) -->
-      <div class="player-wrap" aria-hidden="false" id="playerWrap">
-        <div class="player-inner" id="playerInner" aria-label="Video player area">
-          <!-- iframe appended by JS -->
-        </div>
-      </div>
+      <!-- main column -->
+      <section style="min-width:0;">
+        <!-- meta panel (glass black) -->
+        <div class="panel" id="metaPanel" role="region" aria-label="Video information">
+          <h1 id="title" class="title">Loading…</h1>
+          <div class="sub" id="channelLine">—</div>
 
-      <!-- Meta card -->
-      <div class="meta-card" role="region" aria-label="Video details">
-        <h1 id="videoTitle" class="video-title">Loading…</h1>
-
-        <div class="stats-row" aria-hidden="false">
-          <div id="views" class="pill">— views</div>
-          <div id="likes" class="pill">— likes</div>
-        </div>
-
-        <div class="channel-row">
-          <div class="avatar" id="avatarWrap"><img id="avatarImg" src="" alt="Channel avatar" /></div>
-          <div>
-            <div id="channelName" style="font-weight:800;color:var(--text);">—</div>
-            <div id="channelSubs" style="color:var(--muted);font-weight:700;font-size:13px;">—</div>
+          <div class="meta-row" style="margin-top:10px;">
+            <div id="views" class="pill">— views</div>
+            <div id="likes" class="pill">— likes</div>
+            <a id="openInYouTube" class="glass-link" href="#" target="_blank" rel="noopener noreferrer" style="margin-left:auto;">Open on YouTube</a>
           </div>
         </div>
 
-        <div class="desc" id="descBlock">
-          <div id="descText" class="desc-collapsed">Loading description…</div>
-          <div>
-            <button id="descToggleBtn" class="desc-toggle" aria-expanded="false">Show more</button>
+        <!-- description panel -->
+        <div class="panel" id="descPanel" role="region" aria-label="Description">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-weight:800">Description</div>
+            <div>
+              <button id="toggleDesc" aria-expanded="false" style="background:transparent;border:1px solid var(--panel-border);padding:6px 8px;font-weight:800;cursor:pointer;color:#fff">Show more</button>
+            </div>
+          </div>
+
+          <div id="descText" class="desc desc-collapsed" style="margin-top:10px;">Loading description…</div>
+          <div id="descLinks" style="margin-top:10px"></div>
+        </div>
+
+        <!-- other panel (credits / tags / actions) -->
+        <div class="panel" id="otherPanel" role="region" aria-label="Details">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+            <div style="font-weight:800">Tags & Credits</div>
+            <div id="credits" class="muted">—</div>
+          </div>
+
+          <div style="margin-top:12px; display:flex;gap:8px; flex-wrap:wrap;">
+            <button id="shareBtn" style="background:transparent;border:1px solid var(--panel-border);padding:8px 10px;font-weight:800;cursor:pointer;color:#fff">Share</button>
+            <button id="favBtn" style="background:transparent;border:1px solid var(--panel-border);padding:8px 10px;font-weight:800;cursor:pointer;color:#fff">Save</button>
+            <a id="supportEmail" class="glass-link" href="mailto:drboombaehelpline@gmail.com" style="padding:8px 10px;border:1px solid var(--panel-border);display:inline-block">Email Support</a>
+            <a id="telegramLink" class="glass-link" href="https://t.me/Drboombae" target="_blank" rel="noopener noreferrer" style="padding:8px 10px;border:1px solid var(--panel-border);display:inline-block">Telegram</a>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- mobile recs fallback -->
-      <div id="recsMobile" class="recs-mobile" aria-label="Recommended videos (mobile)">
-        <div style="font-weight:800;margin-bottom:8px">Recommended</div>
-        <div id="recsMobileList"></div>
-      </div>
+      <!-- right column: recommendations (sticky under player) -->
+      <aside style="min-width:0;">
+        <div class="right-col">
+          <div class="panel" id="recsPanel" role="region" aria-label="Recommendations">
+            <div style="font-weight:800;margin-bottom:8px">Recommended</div>
+            <div id="recs" class="recs" aria-live="polite"></div>
+            <div id="recsEmpty" class="muted" style="display:none;margin-top:8px">No recommendations available.</div>
+          </div>
+        </div>
+      </aside>
+
     </div>
+  </main>
 
-    <!-- Right column: recommendations -->
-    <aside class="aside" aria-label="Recommendations">
-      <div class="recs-card" id="recsRightCard" aria-hidden="false">
-        <div style="font-weight:800;margin-bottom:8px">Recommended</div>
-        <div id="recsRightList" aria-live="polite"></div>
-      </div>
-    </aside>
-  </div>
+  <script>
+    (function(){
+      // ---------------------------
+      // CONFIG: Firestore (compat)
+      // ---------------------------
+      // This app uses Firestore 'community_videos' collection only for recommendations (choice A).
+      const FIREBASE_CONFIG = {
+        apiKey: "AIzaSyCPVer1Qg4ecHxbUKHUst8C0dyPCm8LEkM",
+        authDomain: "community-7bd8d.firebaseapp.com",
+        projectId: "community-7bd8d",
+        storageBucket: "community-7bd8d.firebasestorage.app",
+        messagingSenderId: "1034615155630",
+        appId: "1:1034615155630:web:e4ee92c96c3a04875f363f",
+        measurementId: "G-BW2QDBG8GC"
+      };
 
-  <footer class="site-foot">© <span id="year"></span> Boombae</footer>
-</main>
+      // ---------------------------
+      // DOM refs
+      // ---------------------------
+      const params = new URLSearchParams(location.search);
+      const rawVid = params.get('vid') || '';
+      const videoFixed = document.getElementById('videoFixed');
+      const titleEl = document.getElementById('title');
+      const viewsEl = document.getElementById('views');
+      const likesEl = document.getElementById('likes');
+      const channelLine = document.getElementById('channelLine');
+      const openInYouTube = document.getElementById('openInYouTube');
+      const descText = document.getElementById('descText');
+      const descLinks = document.getElementById('descLinks');
+      const toggleDesc = document.getElementById('toggleDesc');
+      const creditsEl = document.getElementById('credits');
+      const recsContainer = document.getElementById('recs');
+      const recsEmpty = document.getElementById('recsEmpty');
+      const shareBtn = document.getElementById('shareBtn');
+      const favBtn = document.getElementById('favBtn');
 
-<!-- Toast -->
-<div id="toast" aria-hidden="true" style="position:fixed;left:50%;transform:translateX(-50%);bottom:26px;background:rgba(255,255,255,0.06);padding:8px 12px;color:var(--text);font-weight:800;z-index:1400;"></div>
+      // state
+      let currentVideoId = '';
+      let iframeEl = null;
+      let db = null;
+      let firestoreAvailable = false;
 
-<!-- Script: logic (YouTube details + shuffle recs + share with thumbnail) -->
-<script type="module">
-  // CONFIG
-  const API_KEY = ''; // optional YouTube API key (leave empty to use oEmbed + fallback)
-  const rawVid = new URLSearchParams(location.search).get('vid') || ''; // ?vid=
-  const DEFAULT_THUMB = (id) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+      // helpers
+      function extractYouTubeID(input){
+        if(!input) return '';
+        const s = String(input).trim();
+        const patterns = [
+          /(?:youtu\.be\/)([A-Za-z0-9_\-]{11})/,
+          /[?&]v=([A-Za-z0-9_\-]{11})/,
+          /\/embed\/([A-Za-z0-9_\-]{11})/,
+          /\/shorts\/([A-Za-z0-9_\-]{11})/,
+          /([A-Za-z0-9_\-]{11})/
+        ];
+        for(const p of patterns){
+          const m = s.match(p);
+          if(m && m[1]) return m[1];
+        }
+        return '';
+      }
+      function niceNumber(n){
+        if(n===undefined||n===null) return '—';
+        const num = Number(n);
+        if(Number.isNaN(num)) return String(n);
+        if(num < 1000) return String(num);
+        if(num < 1_000_000) return (num/1000).toFixed(num%1000 ? 1:0) + 'K';
+        if(num < 1_000_000_000) return (num/1_000_000).toFixed(1) + 'M';
+        return (num/1_000_000_000).toFixed(1) + 'B';
+      }
 
-  // DOM refs
-  const playerInner = document.getElementById('playerInner');
-  const videoTitle = document.getElementById('videoTitle');
-  const viewsEl = document.getElementById('views');
-  const likesEl = document.getElementById('likes');
-  const channelNameEl = document.getElementById('channelName');
-  const channelSubsEl = document.getElementById('channelSubs');
-  const avatarImg = document.getElementById('avatarImg');
-  const descTextEl = document.getElementById('descText');
-  const descToggleBtn = document.getElementById('descToggleBtn');
-  const recsRightList = document.getElementById('recsRightList');
-  const recsMobileList = document.getElementById('recsMobileList');
-  const recsRightCard = document.getElementById('recsRightCard');
-  const playerWrap = document.getElementById('playerWrap');
-  const toastEl = document.getElementById('toast');
-  const shareBtn = document.getElementById('shareBtn');
-  const backBtn = document.getElementById('backBtn');
+      // create player iframe
+      function createIframe(id){
+        const ifr = document.createElement('iframe');
+        ifr.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen');
+        ifr.setAttribute('allowfullscreen','');
+        ifr.src = `https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=0&rel=0&modestbranding=1&playsinline=1`;
+        return ifr;
+      }
 
-  document.getElementById('year').textContent = (new Date()).getFullYear();
+      // set CSS variable --player-height so main.app padding-top matches player height
+      function syncPlayerHeightVar(){
+        // compute height of .video-fixed (may change on resize)
+        requestAnimationFrame(()=>{
+          const h = videoFixed.getBoundingClientRect().height || Math.round(window.innerWidth * 9 / 16);
+          document.documentElement.style.setProperty('--player-height', h + 'px');
+          // also set main.app padding-top: handled by CSS using var(...)
+        });
+      }
 
-  // util helpers
-  const esc = s => String(s || '');
-  const nice = n => {
-    if (n === undefined || n === null) return '—';
-    const num = Number(n);
-    if (Number.isNaN(num)) return String(n);
-    if (num < 1000) return String(num);
-    if (num < 1_000_000) return (num/1000).toFixed(num%1000?1:0) + 'K';
-    if (num < 1_000_000_000) return (num/1_000_000).toFixed(1) + 'M';
-    return (num/1_000_000_000).toFixed(1) + 'B';
-  };
-
-  function showToast(msg, ms=1800){
-    toastEl.textContent = msg;
-    toastEl.style.opacity = '1';
-    toastEl.style.pointerEvents = 'auto';
-    setTimeout(()=> { toastEl.style.opacity = '0'; toastEl.style.pointerEvents = 'none'; }, ms);
-  }
-
-  function extractYouTubeID(input=''){
-    if(!input) return '';
-    const s = String(input).trim();
-    const patterns = [/youtu\.be\/([A-Za-z0-9_-]{11})/, /[?&]v=([A-Za-z0-9_-]{11})/, /\/embed\/([A-Za-z0-9_-]{11})/, /\/shorts\/([A-Za-z0-9_-]{11})/, /([A-Za-z0-9_-]{11})/];
-    for(const p of patterns){ const m = s.match(p); if(m && m[1]) return m[1]; }
-    return '';
-  }
-
-  function createIframe(id){
-    const f = document.createElement('iframe');
-    f.className = 'player-iframe';
-    f.loading = 'lazy';
-    f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
-    f.allowFullscreen = true;
-    f.src = `https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=0&rel=0&modestbranding=1&playsinline=1`;
-    return f;
-  }
-
-  async function fetchOEmbed(id){
-    try{
-      const r = await fetch('https://www.youtube.com/oembed?url=' + encodeURIComponent('https://www.youtube.com/watch?v='+id) + '&format=json');
-      if(!r.ok) return null;
-      return await r.json();
-    }catch(e){ return null; }
-  }
-
-  async function fetchVideoDetails(id){
-    if(!API_KEY || !id) return null;
-    try{
-      const part='snippet,statistics';
-      const r = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=${part}&id=${encodeURIComponent(id)}&key=${API_KEY}`);
-      if(!r.ok) return null;
-      const j = await r.json();
-      if(Array.isArray(j.items) && j.items.length) return j.items[0];
-      return null;
-    }catch(e){ return null; }
-  }
-
-  async function fetchRelated(id, max=12){
-    if(!API_KEY || !id) return [];
-    try{
-      const r = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&relatedToVideoId=${encodeURIComponent(id)}&type=video&maxResults=${max}&key=${API_KEY}`);
-      if(!r.ok) return [];
-      const j = await r.json();
-      if(!Array.isArray(j.items)) return [];
-      return j.items.map(it => ({
-        videoId: it.id?.videoId,
-        title: it.snippet?.title,
-        channelTitle: it.snippet?.channelTitle,
-        thumb: it.snippet?.thumbnails?.medium?.url || it.snippet?.thumbnails?.default?.url || ''
-      })).filter(Boolean);
-    }catch(e){ return []; }
-  }
-
-  function shuffle(a){
-    const arr = Array.isArray(a)? a.slice() : [];
-    for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
-    return arr;
-  }
-
-  function buildRecElement(item){
-    const wrap = document.createElement('div'); wrap.className='rec-item';
-    const th = document.createElement('div'); th.className='rec-thumb';
-    const img = document.createElement('img'); img.src = item.thumb || DEFAULT_THUMB(item.videoId); img.alt = item.title || 'thumb';
-    th.appendChild(img);
-    const meta = document.createElement('div'); meta.className='rec-meta';
-    const t = document.createElement('div'); t.className='rec-title'; t.textContent = item.title || 'Untitled';
-    const ch = document.createElement('div'); ch.style.color='var(--muted)'; ch.style.fontWeight='700'; ch.style.fontSize='12px'; ch.textContent = item.channelTitle || '';
-    meta.appendChild(t); meta.appendChild(ch);
-    wrap.appendChild(th); wrap.appendChild(meta);
-    wrap.tabIndex = 0;
-    wrap.addEventListener('click', ()=> { location.search = '?vid=' + encodeURIComponent(item.videoId); });
-    wrap.addEventListener('keydown', (e)=> { if(e.key === 'Enter') wrap.click(); });
-    return wrap;
-  }
-
-  // share including thumbnail when possible
-  async function shareCurrent({title, text, url, thumbSrc}){
-    const shareText = `${text ? text + '\n' : ''}${url}`;
-    try{
-      // try fetch thumbnail and use Web Share with files if supported
-      if(thumbSrc && navigator.canShare){
-        let blob = null;
-        try {
-          const r = await fetch(thumbSrc, {mode:'cors'});
-          if(r.ok) blob = await r.blob();
-        } catch(e){ blob = null; }
-        if(blob){
-          const ext = (blob.type.split('/')[1] || 'png').split(';')[0];
-          const file = new File([blob], 'thumbnail.'+ext, { type: blob.type });
-          if(navigator.canShare && navigator.canShare({ files:[file] })){
-            await navigator.share({ title, text: shareText, files: [file], url });
-            return;
+      // initialize Firestore (compat)
+      try {
+        if(window.firebase && firebase && firebase.initializeApp){
+          try { firebase.initializeApp(FIREBASE_CONFIG); } catch(e){}
+          if(firebase.firestore){
+            db = firebase.firestore();
+            firestoreAvailable = true;
           }
         }
+      } catch(e){
+        console.warn('Firestore init failed', e);
+        firestoreAvailable = false;
       }
-      // fallback to navigator.share
-      if(navigator.share){
-        await navigator.share({ title, text: shareText, url });
-        return;
+
+      // fetch oEmbed for fallback title/desc if needed
+      async function fetchOEmbed(videoId){
+        try {
+          const r = await fetch('https://www.youtube.com/oembed?url=' + encodeURIComponent('https://www.youtube.com/watch?v='+videoId) + '&format=json');
+          if(!r.ok) return null;
+          return await r.json();
+        } catch(e){ return null; }
       }
-      // fallback copy
-      if(navigator.clipboard){
-        await navigator.clipboard.writeText(url);
-        showToast('Link copied to clipboard');
-        return;
+
+      // Try to fetch video details via YouTube Data API when API key present (optional)
+      const YT_API_KEY = ''; // leave empty unless you add one
+      async function fetchVideoDetails(id){
+        if(!id || !YT_API_KEY) return null;
+        try {
+          const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${encodeURIComponent(id)}&key=${YT_API_KEY}`;
+          const r = await fetch(url);
+          if(!r.ok) return null;
+          const j = await r.json();
+          if(Array.isArray(j.items) && j.items.length) return j.items[0];
+          return null;
+        } catch(e){ return null; }
       }
-    }catch(e){
-      try { await navigator.clipboard.writeText(url); showToast('Link copied to clipboard'); } catch(_) { showToast('Unable to share'); }
-    }
-  }
 
-  // show/hide recs right column based on width
-  function adaptRecsLayout(){
-    const right = document.querySelector('.aside');
-    if(window.innerWidth >= 1000){
-      right.style.display = '';
-      recsMobileList.parentElement.style.display = 'none';
-    } else {
-      right.style.display = 'none';
-      recsMobileList.parentElement.style.display = '';
-    }
-  }
-
-  // render recommendations: shuffle for randomness
-  function renderRecommendations(list){
-    const shuffled = shuffle(list || []);
-    recsRightList.innerHTML = '';
-    recsMobileList.innerHTML = '';
-    shuffled.forEach(item => {
-      recsRightList.appendChild(buildRecElement(item));
-      recsMobileList.appendChild(buildRecElement(item).cloneNode(true));
-    });
-  }
-
-  // main render flow for option 2 (full-width player at top, sticky)
-  (async function init(){
-    // init lucide icons once loaded
-    window.addEventListener('load', ()=> { try{ if(window.lucide) window.lucide.createIcons(); }catch(e){} });
-
-    // wire back & share
-    backBtn.addEventListener('click', ()=> history.back());
-    shareBtn.addEventListener('click', async ()=>{
-      await shareCurrent({
-        title: videoTitle.textContent || 'Boombae Video',
-        text: (descTextEl.textContent || '').slice(0,140),
-        url: location.href,
-        thumbSrc: (playerInner.dataset.thumb || '')
-      });
-    });
-
-    // desc toggle
-    descToggleBtn.addEventListener('click', ()=>{
-      const collapsed = descTextEl.classList.toggle('desc-collapsed');
-      descToggleBtn.textContent = collapsed ? 'Show more' : 'Show less';
-      descToggleBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-    });
-
-    // adapt recs initially and on resize
-    adaptRecsLayout();
-    window.addEventListener('resize', adaptRecsLayout);
-
-    const vid = extractYouTubeID(rawVid || '');
-    if(!vid){
-      videoTitle.textContent = 'No video supplied';
-      playerInner.innerHTML = '<div style="padding:18px;color:var(--text)">Use ?vid=&lt;YouTubeID or URL&gt;</div>';
-      recsRightCard.style.display = 'none';
-      return;
-    }
-
-    // put iframe
-    const iframe = createIframe(vid);
-    playerInner.innerHTML = ''; playerInner.appendChild(iframe);
-
-    // set dataset thumb for sharing fallback
-    playerInner.dataset.thumb = DEFAULT_THUMB(vid);
-
-    // load oEmbed and optionally video details via API
-    let info = null;
-    if(API_KEY) info = await fetchVideoDetails(vid).catch(()=>null);
-    const oembed = (!info) ? await fetchOEmbed(vid).catch(()=>null) : null;
-
-    // populate UI
-    const title = (info?.snippet?.title) || (oembed?.title) || `Video ${vid}`;
-    videoTitle.textContent = title;
-
-    const channelTitle = info?.snippet?.channelTitle || oembed?.author_name || '';
-    channelNameEl.textContent = channelTitle;
-
-    if(info?.snippet?.thumbnails){
-      const thumb = info.snippet.thumbnails?.medium?.url || info.snippet.thumbnails?.default?.url || DEFAULT_THUMB(vid);
-      playerInner.dataset.thumb = thumb;
-    } else if(oembed?.thumbnail_url){
-      playerInner.dataset.thumb = oembed.thumbnail_url;
-    } else {
-      playerInner.dataset.thumb = DEFAULT_THUMB(vid);
-    }
-
-    // avatar & subs (if API available)
-    if(info?.snippet?.channelId && API_KEY){
-      try{
-        const ch = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${encodeURIComponent(info.snippet.channelId)}&key=${API_KEY}`).then(r=>r.ok? r.json() : null);
-        if(ch && Array.isArray(ch.items) && ch.items[0]){
-          const c = ch.items[0];
-          avatarImg.src = c.snippet?.thumbnails?.default?.url || '';
-          channelNameEl.textContent = c.snippet?.title || channelTitle;
-          channelSubsEl.textContent = c.statistics?.subscriberCount ? nice(c.statistics.subscriberCount) + ' subscribers' : '';
+      // update UI with video info
+      async function renderVideo(videoId){
+        if(!videoId){
+          titleEl.textContent = 'No video supplied';
+          videoFixed.innerHTML = '<div style="padding:18px;color:#fff">Open this page with ?vid=&lt;YouTubeID or URL&gt;</div>';
+          return;
         }
-      }catch(e){}
-    } else {
-      avatarImg.src = '';
-      channelSubsEl.textContent = '';
-    }
+        currentVideoId = videoId;
 
-    // stats (views/likes) from API if available
-    if(info?.statistics){
-      viewsEl.textContent = nice(info.statistics.viewCount) + ' views';
-      likesEl.textContent = (info.statistics.likeCount !== undefined) ? nice(info.statistics.likeCount) + ' likes' : '— likes';
-    } else {
-      viewsEl.textContent = '— views';
-      likesEl.textContent = '— likes';
-    }
+        // placeholder
+        titleEl.textContent = 'Loading…';
+        viewsEl.textContent = '— views';
+        likesEl.textContent = '— likes';
+        channelLine.textContent = '—';
+        descText.textContent = 'Loading description…';
+        creditsEl.textContent = '—';
+        openInYouTube.href = `https://youtube.com/watch?v=${encodeURIComponent(videoId)}`;
 
-    // description
-    const descTextRaw = info?.snippet?.description || oembed?.author_name ? (oembed?.author_name + '') : (oembed?.title?oembed.title:'') || '';
-    const finalDesc = (info?.snippet?.description) || (oembed?.title ? ('By ' + oembed.title) : '') || '';
-    descTextEl.textContent = finalDesc || '—';
-    // show more button only when description long
-    if((descTextEl.textContent||'').length < 160) { descToggleBtn.style.display = 'none'; descTextEl.classList.remove('desc-collapsed'); }
-    else { descToggleBtn.style.display = ''; descTextEl.classList.add('desc-collapsed'); descToggleBtn.textContent = 'Show more'; }
+        // insert iframe
+        iframeEl = createIframe(videoId);
+        videoFixed.innerHTML = '';
+        videoFixed.appendChild(iframeEl);
+        syncPlayerHeightVar();
 
-    // Recommendations: attempt to use YouTube related (if API_KEY) else fallback to a small list using oembed
-    let pool = [];
-    if(API_KEY){
-      try{ pool = await fetchRelated(vid, 24); }catch(e){ pool = []; }
-    }
-    // If pool empty, try a simple fallback set (use oembed on a few ids to produce variety). We'll produce a small set of ids to try.
-    if(!pool.length){
-      const fallbackIds = ['dQw4w9WgXcQ','3JZ_D3ELwOQ','M3Z0Z4lJwHk','LXb3EKWsInQ','kXYiU_JCYtU']; // sample public ids
-      pool = await Promise.all(fallbackIds.map(async id => {
-        const oe = await fetchOEmbed(id).catch(()=>null);
-        return { videoId: id, title: oe?.title || ('Video ' + id), channelTitle: oe?.author_name || '' , thumb: oe?.thumbnail_url || DEFAULT_THUMB(id) };
-      })).catch(()=>[]);
-    }
+        // Try to load full details: priority YT Data API (if key set), else oEmbed
+        let info = null;
+        if(YT_API_KEY) info = await fetchVideoDetails(videoId).catch(()=>null);
+        const oembed = (!info) ? await fetchOEmbed(videoId).catch(()=>null) : null;
 
-    // Shuffle pool and take up to 12
-    pool = shuffle(pool).slice(0,12);
+        // populate from available sources
+        const titleText = (info && info.snippet && info.snippet.title) || (oembed && oembed.title) || (`Video ${videoId}`);
+        titleEl.textContent = titleText;
 
-    // ensure required fields
-    pool = pool.map(it => ({ videoId: it.videoId, title: it.title || ('Video ' + it.videoId), channelTitle: it.channelTitle || '', thumb: it.thumb || DEFAULT_THUMB(it.videoId) }));
+        const channel = (info && info.snippet && info.snippet.channelTitle) || (oembed && oembed.author_name) || '';
+        channelLine.textContent = channel ? channel : '—';
 
-    // render recs
-    renderRecommendations(pool);
+        if(info && info.statistics){
+          viewsEl.textContent = `${niceNumber(info.statistics.viewCount)} views`;
+          likesEl.textContent = (info.statistics.likeCount !== undefined) ? `${niceNumber(info.statistics.likeCount)} likes` : '— likes';
+        } else {
+          viewsEl.textContent = '— views';
+          likesEl.textContent = '— likes';
+        }
 
-    // if no recs -> hide aside
-    if(!(pool && pool.length)){
-      recsRightCard.style.display = 'none';
-    }
+        const desc = (info && info.snippet && info.snippet.description) || (oembed && oembed.html? '' : (oembed && oembed.title? '' : '')) || '';
+        // If no description from YT, try oembed (oembed does not include full description usually)
+        if(info && info.snippet && info.snippet.description) {
+          descText.textContent = info.snippet.description;
+        } else {
+          // try oembed as fallback for minimal info
+          descText.textContent = (oembed && oembed.title) ? `${oembed.title}` : '';
+        }
 
-    // create lucide icons (static ones)
-    try{ if(window.lucide) window.lucide.createIcons(); }catch(e){}
+        // show link chips for URLs inside description (basic)
+        descLinks.innerHTML = '';
+        const matches = (info && info.snippet && info.snippet.description) ? String(info.snippet.description).match(/https?:\/\/[^\s)]+/g) : [];
+        (matches || []).slice(0,8).forEach(l => {
+          const a = document.createElement('a');
+          a.href = l; a.target = '_blank'; a.rel = 'noopener noreferrer';
+          a.className = 'glass-link';
+          a.style.display = 'inline-block';
+          a.style.marginRight = '8px';
+          a.textContent = l.replace(/^https?:\/\//,'').replace(/\/.*$/,'');
+          descLinks.appendChild(a);
+        });
 
-  })();
+        // credits placeholder (could derive from snippet.channelTitle)
+        creditsEl.textContent = channel ? `Uploaded by ${channel}` : '—';
+      }
 
-  // create icons when lucide loads if not yet created
-  window.addEventListener('load', ()=> { try{ if(window.lucide) window.lucide.createIcons(); }catch(e){} });
+      // load recommendations ONLY from Firestore 'community_videos', then randomize and display
+      async function loadRecommendations(excludeVideoId){
+        recsContainer.innerHTML = '';
+        recsEmpty.style.display = 'none';
 
-</script>
+        if(!firestoreAvailable || !db){
+          recsEmpty.textContent = 'Recommendations are not available.';
+          recsEmpty.style.display = 'block';
+          return;
+        }
 
+        try {
+          // get all community_videos (limit to a reasonable max)
+          const snapshot = await db.collection('community_videos').orderBy('createdAt','desc').limit(300).get();
+          const pool = [];
+          snapshot.forEach(doc => {
+            const d = doc.data();
+            if(!d || !d.videoId) return;
+            if(String(d.videoId) === String(excludeVideoId)) return;
+            // ensure "real" videos only: require title and videoId
+            if(!d.title || !d.videoId) return;
+            pool.push({
+              videoId: d.videoId,
+              title: d.title,
+              channelTitle: d.channelTitle || d.uploaderName || '',
+              thumb: d.thumbnailUrl || `https://i.ytimg.com/vi/${d.videoId}/hqdefault.jpg`
+            });
+          });
+
+          if(pool.length === 0){
+            recsEmpty.textContent = 'No recommendations available.';
+            recsEmpty.style.display = 'block';
+            return;
+          }
+
+          // randomize pool (Fisher–Yates shuffle) and pick up to 8
+          for(let i = pool.length - 1; i > 0; i--){
+            const j = Math.floor(Math.random() * (i + 1));
+            [pool[i], pool[j]] = [pool[j], pool[i]];
+          }
+          const chosen = pool.slice(0, 8);
+
+          // render
+          chosen.forEach(item => {
+            const r = document.createElement('div');
+            r.className = 'rec';
+            r.tabIndex = 0;
+            r.setAttribute('role','button');
+            r.addEventListener('click', () => {
+              // navigate to same page with new vid param
+              const u = new URL(window.location.href);
+              u.searchParams.set('vid', item.videoId);
+              location.href = u.toString();
+            });
+            r.addEventListener('keydown', e => { if(e.key === 'Enter') r.click(); });
+
+            const thumb = document.createElement('div');
+            thumb.className = 'rec-thumb';
+            const img = document.createElement('img');
+            img.alt = item.title || 'thumbnail';
+            img.src = item.thumb;
+            thumb.appendChild(img);
+
+            const meta = document.createElement('div');
+            meta.style.flex = '1 1 auto';
+            meta.style.minWidth = '0';
+            const t = document.createElement('div');
+            t.className = 'rec-title';
+            t.textContent = item.title || 'Untitled';
+            const ch = document.createElement('div');
+            ch.className = 'muted';
+            ch.style.marginTop = '6px';
+            ch.textContent = item.channelTitle || '';
+            meta.appendChild(t);
+            meta.appendChild(ch);
+
+            r.appendChild(thumb);
+            r.appendChild(meta);
+            recsContainer.appendChild(r);
+          });
+
+        } catch (e) {
+          console.warn('Failed loading recommendations', e);
+          recsEmpty.textContent = 'Unable to load recommendations.';
+          recsEmpty.style.display = 'block';
+        }
+      }
+
+      // share: try to include thumbnail file when supported
+      async function shareCurrent(){
+        const url = location.href;
+        const title = titleEl.textContent || 'Video';
+        // try fetch thumbnail from yt hqdefault
+        const thumbUrl = `https://i.ytimg.com/vi/${encodeURIComponent(currentVideoId)}/hqdefault.jpg`;
+        try {
+          if(navigator.canShare){
+            // attempt fetch blob
+            let blob = null;
+            try {
+              const r = await fetch(thumbUrl, { mode: 'cors' });
+              if(r.ok) blob = await r.blob();
+            } catch(e){ blob = null; }
+            if(blob){
+              const file = new File([blob], 'thumbnail.jpg', { type: blob.type });
+              if(navigator.canShare && navigator.canShare({ files: [file] })){
+                await navigator.share({ title, text: title, url, files: [file] });
+                return;
+              }
+            }
+          }
+          if(navigator.share){ await navigator.share({ title, text: title, url }); return; }
+          await navigator.clipboard.writeText(url);
+          alert('Link copied to clipboard');
+        } catch(e){
+          try { await navigator.clipboard.writeText(url); alert('Link copied to clipboard'); } catch(_){ alert('Unable to share'); }
+        }
+      }
+
+      // favorites toggle (localStorage)
+      function toggleFavorite(){
+        const key = 'boombae_recs_favs_v1';
+        let arr = [];
+        try { arr = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){ arr = []; }
+        const exists = arr.find(x => x && x.videoId === currentVideoId);
+        if(!exists){
+          arr.unshift({ videoId: currentVideoId, title: titleEl.textContent || '' });
+          localStorage.setItem(key, JSON.stringify(arr.slice(0, 80)));
+          favBtn.textContent = 'Saved';
+        } else {
+          arr = arr.filter(x => x.videoId !== currentVideoId);
+          localStorage.setItem(key, JSON.stringify(arr));
+          favBtn.textContent = 'Save';
+        }
+      }
+
+      // toggle description expand/collapse
+      toggleDesc.addEventListener('click', () => {
+        const expanded = toggleDesc.getAttribute('aria-expanded') === 'true';
+        if(expanded){
+          descText.classList.add('desc-collapsed');
+          toggleDesc.setAttribute('aria-expanded','false');
+          toggleDesc.textContent = 'Show more';
+        } else {
+          descText.classList.remove('desc-collapsed');
+          toggleDesc.setAttribute('aria-expanded','true');
+          toggleDesc.textContent = 'Show less';
+        }
+      });
+
+      // share & fav buttons
+      shareBtn.addEventListener('click', shareCurrent);
+      favBtn.addEventListener('click', toggleFavorite);
+
+      // On resize keep CSS var for player height in sync
+      window.addEventListener('resize', syncPlayerHeightVar);
+
+      // handle double click on video to toggle fullscreen (works for iframe container)
+      videoFixed.addEventListener('dblclick', async () => {
+        try {
+          if(videoFixed.requestFullscreen) await videoFixed.requestFullscreen();
+          else if(videoFixed.webkitRequestFullscreen) await videoFixed.webkitRequestFullscreen();
+        } catch(e){}
+      });
+
+      // initialize lucide icons once loaded
+      window.addEventListener('load', () => {
+        try { if(window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons(); } catch(e){}
+      });
+
+      // boot: parse vid, render, and load recs
+      (async function boot(){
+        const vid = extractYouTubeID(rawVid || '');
+        if(!vid){
+          // nothing to show
+          titleEl.textContent = 'No video specified';
+          videoFixed.innerHTML = '<div style="padding:18px;color:#fff">Open this page with ?vid=&lt;YouTubeID or URL&gt;</div>';
+          syncPlayerHeightVar();
+          // still try to load recs (if any)
+          await loadRecommendations(null);
+          return;
+        }
+        await renderVideo(vid);
+        // attempt to load recommendations from Firestore (choice A) — real only & random
+        await loadRecommendations(vid);
+        // ensure player height var is set
+        syncPlayerHeightVar();
+      })();
+
+    })();
+  </script>
 </body>
 </html>
