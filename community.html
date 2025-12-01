@@ -281,6 +281,23 @@
 
 /* Remove ESC text completely */
 .kbd-hint { display:none !important; }
+
+    /* Make floating chat button fully circular */
+.floating-chat {
+    border-radius: 50% !important;
+    width: 56px !important;      /* slightly bigger circle */
+    height: 56px !important;
+    padding: 0 !important;
+    overflow: hidden;            /* keeps image contained cleanly */
+}
+
+/* Ensure image fits perfectly inside */
+.floating-chat img {
+    border-radius: 50% !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
     
   </style>
 </head>
