@@ -398,6 +398,115 @@ body::before {
     gap:8px;
 }
 
+
+
+
+    /* ---------- GOLDEN EDGE OVERRIDE — paste at BOTTOM of your CSS ---------- */
+/* Premium gold used throughout */
+:root { --gold-edge: #D4AF37; --gold-edge-strong: #b88f2a; --gold-edge-glow: rgba(212,175,55,0.16); }
+
+/* Apply thin gold outline + subtle glow + inner tone to most visible containers */
+section, header, footer, .card, .featured-card, .hl-item, .video-row, .video-thumb,
+.search-card, .search-results, .side-menu, .bottom-sheet, .menu-item, .sheet-action,
+.grid > a, .recent-item, .chip, .cat-chip, .featured-row, .hl-viewport, .video-meta,
+.video-list, .layout, .sidebar, .premium-card, .confirm-card {
+  border: 1px solid var(--gold-edge) !important;              /* sharp edge line */
+  box-shadow:
+    0 6px 30px rgba(0,0,0,0.6),                                /* base depth */
+    0 0 18px var(--gold-edge-glow) !important;                 /* soft gold halo */
+  position: relative;
+  background-clip: padding-box !important;
+}
+
+/* Stronger accent for focused/active states */
+section:focus-within, .card:focus-within, .menu-item:focus, .bottom-sheet.open,
+.side-menu.open, .search-card:focus-within, .hl-item:focus {
+  border-color: var(--gold-edge-strong) !important;
+  box-shadow:
+    0 12px 46px rgba(0,0,0,0.65),
+    0 0 28px rgba(212,175,55,0.20) !important;
+  outline: none !important;
+}
+
+/* Inner inset sheen to make gold edge feel integrated (keeps panels readable) */
+section::before, .card::before, .featured-card::before, .video-row::before,
+.search-card::before, .side-menu::before, .bottom-sheet::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.01), inset 0 0 10px rgba(0,0,0,0.5);
+  mix-blend-mode: normal;
+}
+
+/* Make headings and gold-accent titles use the gold color (no glow unless specified) */
+section h1, section h2, section h3, .featured-title, .sheet-title, .menu-item > div > div:first-child {
+  color: var(--gold-edge) !important;
+  text-shadow: none !important;
+  font-weight: 800 !important;
+}
+
+/* Game / product titles: golden with subtle glow for emphasis */
+.card .title, .game-name, .card-title, .product-name {
+  color: #f8d57c !important;
+  text-shadow: 0 0 8px rgba(255,220,140,0.45), 0 0 14px rgba(255,190,110,0.22) !important;
+}
+
+/* Keep body text and UI elements readable (warm white) */
+body, body *:not(.card .title):not(.game-name):not(.card-title) {
+  color: #f7f3ea !important;
+}
+
+/* Buttons, links and menu refs — gold text on hover */
+button, .btn, .sheet-action, a {
+  color: #f7f3ea !important;
+  border: 1px solid rgba(212,175,55,0.06) !important;
+}
+button:hover, .btn:hover, a:hover, .sheet-action:hover {
+  color: var(--gold-edge) !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6), 0 0 18px rgba(212,175,55,0.12);
+}
+
+/* Ensure the bottom drawer is pitch-black while still having a gold edge */
+.bottom-sheet, .bottom-sheet.sheet-right {
+  background: #000 !important;
+  border: 1px solid var(--gold-edge) !important;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.95), 0 0 22px rgba(212,175,55,0.12) !important;
+}
+.bottom-sheet * { color: #fff !important; }
+
+/* Make side menu distinctly edged */
+.side-menu {
+  background: linear-gradient(180deg, rgba(12,12,13,0.96), rgba(20,18,16,0.98)) !important;
+  border-left: 2px solid var(--gold-edge) !important;
+}
+
+/* Thicker golden border for important callouts / premium cards */
+.premium-card, .video-card.premium, .creatorVideos .video-card.premium {
+  border: 1.6px solid var(--gold-edge-strong) !important;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.7), 0 0 30px rgba(212,175,55,0.16) !important;
+}
+
+/* Remove competing glows from other rules so edges are consistent */
+* { -webkit-text-stroke: 0 !important; text-stroke: 0 !important; }
+
+/* Small devices: reduce glow to avoid over-saturation */
+@media (max-width: 700px) {
+  section, .card, .featured-card, .hl-item, .video-row, .search-card {
+    box-shadow: 0 6px 22px rgba(0,0,0,0.6), 0 0 12px rgba(212,175,55,0.08) !important;
+    border: 1px solid rgba(212,175,55,0.85) !important;
+  }
+}
+
+/* Utility helper: add a "no-gold" class when you need to skip gold on a specific element */
+.no-gold, .no-gold * {
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: inherit !important;
+}
+
+/* End of golden-edge override */
     
   </style>
 </head>
