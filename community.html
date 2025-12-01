@@ -397,6 +397,64 @@ body::before {
     align-items:center;
     gap:8px;
 }
+    /* ================================
+   🔥 GLOBAL GOLD SECTION BORDERS
+   ================================ */
+
+section, 
+.video-row,
+.search-card,
+.search-results,
+.menu-item,
+.side-menu,
+.hl-viewport,
+.sr-thumb,
+.floating-chat,
+.confirm-card,
+.premium-card,
+.side-backdrop.open ~ .side-menu,
+.video-thumb,
+.hl-item,
+.search-result,
+.menu-profile,
+.search-section,
+.layout,
+.content,
+.sidebar,
+.premium-backdrop.open .premium-card,
+.confirm-backdrop.open .confirm-card {
+    border: 1px solid var(--accent-gold) !important;
+}
+
+/* Smooth golden glow hover effect (Premium UI) */
+section:hover,
+.video-row:hover,
+.search-card:hover,
+.hl-item:hover,
+.menu-item:hover,
+.floating-chat:hover,
+.search-result:hover {
+    box-shadow: 0 0 18px rgba(212,175,55,0.35) !important;
+    transition: .28s ease;
+}
+
+/* Header underline golden */
+.header {
+    border: 1px solid var(--accent-gold) !important;
+    box-shadow: 0 0 22px rgba(212,175,55,0.24) !important;
+}
+
+/* Sidebar edges golden */
+.side-menu {
+    border-right: 2px solid var(--accent-gold) !important;
+    box-shadow: 0 0 45px rgba(212,175,55,0.32) !important;
+}
+
+/* Search input focus = Gold ring */
+.search-input:focus {
+    border-bottom: 2px solid var(--accent-gold) !important;
+}
+    
   </style>
 </head>
 <body>
