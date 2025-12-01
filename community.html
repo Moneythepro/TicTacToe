@@ -312,7 +312,25 @@ textarea:focus {
     outline: none !important;
     box-shadow: none !important;
     }
-    
+    /* =========================
+   HIGHLIGHTS — RESPONSIVE WIDTH
+   ========================= */
+
+/* PC/tablet = 5 cards visible */
+.hl-item {
+    flex: 0 0 calc((100% / 5) - 12px) !important;
+    max-width: calc((100% / 5) - 12px) !important;
+    aspect-ratio: 16/9;
+}
+
+/* Mobile = 2.5 cards visible (peek next card) */
+@media (max-width: 700px){
+  .hl-item {
+      flex: 0 0 calc((100% / 2.5) - 10px) !important;
+      max-width: calc((100% / 2.5) - 10px) !important;
+      aspect-ratio: 16/9;
+  }
+}
   </style>
 </head>
 <body>
