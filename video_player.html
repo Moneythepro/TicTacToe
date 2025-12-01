@@ -148,6 +148,30 @@
 
     /* ensure the right column is visually distinct on wide screens */
     aside .panel-inner { background:var(--panel-dark); padding:12px; border-radius:12px; border:1px solid var(--glass); box-shadow:0 20px 40px rgba(0,0,0,0.5); }
+  .page{
+  padding:0;                 /* No gutter */
+  max-width:none;            /* Full width layout */
+}
+
+.player-sticky{
+  margin:0;                  /* No offset */
+  border-radius:0;           /* Touch corners */
+  padding:0;
+  top:0;                     /* Stick from absolute top */
+}
+
+.player{
+  border-radius:0;
+  width:100vw;               /* FULL WIDTH */
+  margin-left:50%;
+  transform:translateX(-50%); /* Prevent body margin shifts */
+}
+    .card{
+  border-radius:0;           /* Flat layer under video */
+  margin-top:-5px;           /* Seamless connect */
+  background:var(--panel-dark);
+  padding-top:0;
+    }
   </style>
 </head>
 
