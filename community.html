@@ -19,20 +19,6 @@
   <meta name="description" content="Community — Premium Monochrome final build (updated UI & UX)" />
 
   <style>
-    /* ===========================================================
-       Community v0.4 — Updated
-       Changes applied:
-         1) header height reduced by 30%
-         2) ALL UI corners made fully square (no rounded corners)
-         3) premium color scheme for background, cards, text & accents
-         4) enhanced side menu/modal UI + keyboard accessibility
-         5) added an on-page Tips & Upgrades panel (collapsible)
-       Extra improvements:
-         - improved focus outlines for accessibility
-         - menu slide & close button, ESC handling
-         - sticky recommendations area improvements
-         - ARIA attributes for modals
-    ============================================================ */
 
     :root{
       /* Premium dark + gold accent palette */
@@ -258,15 +244,6 @@
     .btn-ghost { background: transparent; border: 1px solid rgba(0,0,0,0.06); padding:10px 12px; font-weight:800; cursor:pointer; }
     .btn-primary { background: linear-gradient(180deg, var(--accent-gold), var(--accent-gold-strong)); color:#111; padding:10px 12px; font-weight:900; border:0; cursor:pointer; }
 
-    /* ===== Tips & Upgrades panel (collapsible) ===== */
-    .tips-panel {
-      margin-top:12px; border: 1px solid var(--panel-border); background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
-      padding:12px; box-shadow: var(--shadow-lg);
-    }
-    .tips-title { display:flex; justify-content:space-between; gap:8px; align-items:center; font-weight:900; color:var(--accent-gold); }
-    .tips-body { margin-top:10px; color:var(--text-muted); display:none; line-height:1.45; }
-    .tips-body.open { display:block; }
-
     /* focus ring improvement for keyboard users globally */
     :focus { outline: 3px solid rgba(143,214,255,0.08); outline-offset: 2px; }
 
@@ -275,6 +252,36 @@
     a.glass-link { color: var(--link); font-weight:700; text-decoration:none; }
     a.glass-link:hover { text-decoration: underline; }
 
+    /* ————————————————
+   ROUND CHANNEL LOGO + CHAT ICON
+——————————————— */
+.channel-avatar img,
+.floating-chat img {
+    border-radius: 50% !important;
+}
+
+/* ————————————————
+   REMOVE OUTLINE FROM 3-DOT MENU & MODAL
+——————————————— */
+.side-menu,
+.side-menu *,
+.menu-item,
+.side-menu .close-btn,
+.side-menu:focus,
+.side-menu *:focus,
+.side-backdrop,
+.menu-item:focus,
+.menu-item:hover,
+.side-menu h3,
+.side-menu .ref-text {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: rgba(255,255,255,0.02) !important;
+}
+
+/* Remove ESC text completely */
+.kbd-hint { display:none !important; }
+    
   </style>
 </head>
 <body>
@@ -309,26 +316,7 @@
     <div class="layout" role="main">
       <div class="content">
         <section id="videoList" class="video-list" aria-live="polite"></section>
-
-        <!-- Tips & Upgrades (collapsible) -->
-        <div class="tips-panel" role="region" aria-label="Tips and upgrades">
-          <div class="tips-title">
-            <div>Tips & Upgrades</div>
-            <button id="tipsToggle" class="icon-btn" title="Toggle tips" aria-expanded="false"><i data-lucide="chevron-down"></i></button>
-          </div>
-          <div id="tipsBody" class="tips-body">
-            <ol style="margin-top:10px;">
-              <li><strong>Progressive hydration:</strong> prefetch minimal metadata for list (title+thumb) and lazy-load heavy details (stats, channel avatar) after render to improve first paint.</li>
-              <li><strong>Client-side caching:</strong> store recent results (localStorage / IndexedDB) and show cached list instantly while revalidating in background.</li>
-              <li><strong>Image optimization:</strong> serve webp when supported; add low-quality image placeholders (LQIP) to avoid layout jumps.</li>
-              <li><strong>Accessibility:</strong> add keyboard-only shortcuts (e.g., '/' to focus search) and ensure all interactive items have ARIA roles.</li>
-              <li><strong>Analytics & error monitoring:</strong> send non-personal telemetry for video load failures to spot broken embeds or removed videos.</li>
-              <li><strong>Server-side feed:</strong> if possible add a small server endpoint to supply pre-shuffled recommendations reducing bandwidth and improving consistency.</li>
-            </ol>
-            <div style="margin-top:8px;font-weight:800;color:var(--accent-gold);">Want a prioritized roadmap? Ask and I'll generate a 6-week plan (UI → infra → analytics).</div>
-          </div>
-        </div>
-      </div>
+     </div>
 
       <aside class="sidebar" aria-label="Sidebar">
         <!-- Sidebar intentionally left minimal per request -->
