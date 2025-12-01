@@ -353,19 +353,70 @@ body::before {
         radial-gradient(700px 450px at 85% 80%, rgba(212,175,55,0.03), transparent 60%),
         #080708; /* solid base */
 }
+    /* ===========================
+   CENTER TITLE + BACK BUTTON
+=========================== */
+
+.header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position:sticky;
+    top:12px;
+    z-index:140;
+}
+
+/* Back Button Left */
+.back-btn{
+    width:40px;
+    height:36px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:transparent;
+    border:none;
+    color:var(--text-primary);
+    cursor:pointer;
+}
+
+/*  TITLE is absolutely centered = always perfect middle */
+.header-title{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:18px;
+    font-weight:900;
+    letter-spacing:.4px;
+    text-transform:uppercase;
+    pointer-events:none; /* prevents blocking clicks behind */
+}
+
+/* Right side icons unchanged */
+.hdr-actions{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
   </style>
 </head>
 <body>
   <main class="page" id="app">
     <header class="header" role="banner" aria-label="Community header">
-      <div class="brand">
-        <div class="title">Community</div>
-      </div>
 
-      <div class="hdr-actions" aria-hidden="false" role="toolbar" aria-label="Header actions">
-        <button id="uploadBtn" class="icon-btn" title="Upload" aria-label="Upload"><i data-lucide="upload"></i></button>
-        <button id="openMenuBtn" class="icon-btn" title="Menu" aria-label="Open menu"><i data-lucide="menu"></i></button>
-      </div>
+    <!--  Left Back Button  -->
+    <button class="back-btn" onclick="history.back()" aria-label="Go Back">
+        <i data-lucide="arrow-left"></i>
+    </button>
+
+    <!-- Centered Title -->
+    <div class="header-title">Community</div>
+
+    <!-- Right Icons -->
+    <div class="hdr-actions">
+        <button id="uploadBtn" class="icon-btn"><i data-lucide="upload"></i></button>
+        <button id="openMenuBtn" class="icon-btn"><i data-lucide="menu"></i></button>
+    </div>
+
     </header>
 
     <!-- Highlights -->
