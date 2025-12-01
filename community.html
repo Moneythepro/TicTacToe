@@ -331,6 +331,28 @@ textarea:focus {
       aspect-ratio: 16/9;
   }
 }
+    /* ===========================
+   🔥 FINAL COMMUNITY BACKGROUND
+   =========================== */
+
+body {
+    background: #080708 !important; /* Premium dark gold-friendly black */
+    color: #f7f3ea;                 /* Warm white fits gold perfectly */
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+
+    /* Premium subtle gold vignette glow */
+    background:
+        radial-gradient(900px 600px at 15% 20%, rgba(212,175,55,0.05), transparent 55%),
+        radial-gradient(700px 450px at 85% 80%, rgba(212,175,55,0.03), transparent 60%),
+        #080708; /* solid base */
+}
   </style>
 </head>
 <body>
